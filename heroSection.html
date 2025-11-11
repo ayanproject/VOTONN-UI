@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VOTONN - Online Voting Platform</title>
+  <link rel="stylesheet" href="heroStyle.css"/>
+</head>
+<body>
+  <header>
+    <h1>Welcome to VOTONN</h1>
+    <p>India's most secure online voting platform. Exercise your democratic right with confidence and transparency.</p>
+    <div class="features">🔒 Bank-Grade Security &nbsp; | &nbsp; 👤 Biometric Verification &nbsp; | &nbsp; 🏛 Government Certified</div>
+  </header>
+
+  <div class="container">
+    <!-- Registration -->
+    <div class="card">
+      <h2>New Voter Registration</h2>
+      <ul>
+        <li>🪪 Voter ID Card Required</li>
+        <li>📷 Face Recognition Setup</li>
+        <li>📧 Email Verification</li>
+        <li>🔑 4-Digit Security PIN</li>
+      </ul>
+      <button onclick="window.location.href='registration.html'">Start Registration</button>
+    </div>
+
+    <!-- Voting -->
+    <div class="card">
+      <h2>Continue to Vote</h2>
+      <ul>
+        <li>🔑 4-Digit PIN Authentication</li>
+        <li>📷 Face Recognition Verification</li>
+        <li>📩 OTP Verification</li>
+        <li>🗳 Secure Vote Submission</li>
+      </ul>
+
+      <!-- Hidden form (revealed on click) -->
+      <form id="voteForm" style="display:none" onsubmit="event.preventDefault(); proceedToVote();">
+        <input type="text" id="voterId" placeholder="Enter Voter ID" required />
+        <input type="password" id="secretPin" placeholder="Enter Secret PIN" required />
+
+        <div class="camera-wrap">
+          <div class="video-area">
+            <video id="camera" autoplay playsinline muted></video>
+            <canvas id="snapshot" style="display:none"></canvas>
+          </div>
+          <div class="cam-actions">
+            <button type="button" id="startCamBtn" onclick="startCamera()">Start Camera</button>
+            <button type="button" id="captureBtn" onclick="captureFrame()" disabled>Capture</button>
+            <button type="button" id="retakeBtn" onclick="retake()" style="display:none">Retake</button>
+            <button type="button" id="stopCamBtn" onclick="stopCamera()" disabled>Stop Camera</button>
+          </div>
+          <small class="hint">
+            Tip: Use HTTPS or <code>http://localhost</code> to enable camera access in browsers.
+          </small>
+        </div>
+
+        <button type="submit" class="btn">Verify & Proceed</button>
+      </form>
+
+      <button id="proceedBtn" onclick="showVoteForm()">Proceed to Vote</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 VOTONN. All rights reserved. Certified by Election Commission of India.</p>
+  </footer>
+
+  <script src="heroScript.js"></script>
+</body>
+</html>

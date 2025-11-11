@@ -9,13 +9,14 @@ document.addEventListener("DOMContentLoaded", () => {
         email: document.getElementById("email").value,
         password: document.getElementById("password").value,
         age: document.getElementById("age").value,
-        Phone: document.getElementById("phone").value,
+        phone: document.getElementById("phone").value,
         gender: document.getElementById("gender").value,
         role: document.getElementById("role").value.toUpperCase()
       };
-
+      
        try {
-        const response = await fetch('http://localhost:8080/api/Register', {
+        //console.log('${process.env.USER_REGISTER}')
+        const response = await fetch('https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -24,9 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (response.ok) {
+            sessionStorage.setItem('email', email);
+            sessionStorage.setItem('password', password);
             const message = await response.text();
             alert(message); // Show success message
-            window.location.href = 'index.html'
+            window.location.href = 'heroSection.html'
         } else {
             const errorMessage = await response.text();
             alert(`Email Already Exist: ${errorMessage}`); // Show error message
@@ -39,8 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Login Handler
-  // Login Handler
-const loginForm = document.getElementById("loginForm");
+  const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
@@ -55,34 +57,36 @@ if (loginForm) {
     };
 
     const headers = new Headers();
+    headers.append('Authorization', 'Basic ' + btoa(email + ':' + password));
     headers.append('Content-Type', 'application/json');
 
     try {
-      const response = await fetch('http://localhost:8080/api/Login', {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(user)
+      const response = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/login", {
+        method: "POST",
+        headers: {
+          "Authorization": "Basic " + btoa(`${email}:${password}`),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
       });
 
-      if (response.ok) {
-        // Save login details and expiry timestamp
-        localStorage.setItem('email', email);
-        localStorage.setItem('password', password);
-        const expiryTime = Date.now() + 2.5 * 60 * 1000; // 2.5 minutes from now
-        localStorage.setItem('expiryTime', expiryTime);
-
-        alert('Login successful');
-        window.location.href = 'voter-auth.html';
-      } else {
-        const errorMessage = await response.text();
-        alert(`Login failed: ${errorMessage}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Invalid credentials");
       }
-    } catch (error) {
-      console.error('Error during login:', error);
-      alert('Login failed. Please try again later.');
+
+      sessionStorage.setItem("email", email);
+      sessionStorage.setItem("isLoggedIn", "true");
+
+      alert("Login successful!");
+      window.location.href = "heroSection.html";
+
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Login failed. Please try again.");
     }
+
   });
 }
-
 
 });

@@ -93,6 +93,57 @@
     .btn-back:hover {
       background-color: #c82333;
     }
+
+    /* OTP Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 350px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .modal-content input {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .modal-content button {
+      width: 40%;
+      padding: 10px;
+      margin: 8px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn-verify {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .btn-cancel {
+      background-color: #6c757d;
+      color: white;
+    }
   </style>
 </head>
 
@@ -106,7 +157,19 @@
 
 <div class="buttons">
   <button class="btn btn-back" onclick="goBack()">Back</button>
-  <button class="btn btn-confirm" onclick="submitVote()">Confirm and Submit</button>
+  <button class="btn btn-confirm" onclick="handleVoteProcess()">Confirm and Submit</button>
+</div>
+
+<!-- OTP Modal -->
+<div id="otpModal" class="modal">
+  <div class="modal-content">
+    <h3>Enter OTP</h3>
+    <p>Check your email for a 6-digit OTP.</p>
+    <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" />
+    <br>
+    <button class="btn-verify" onclick="verifyOtpBeforeSubmit()">Verify</button>
+    <button class="btn-cancel" onclick="closeOtpModal()">Cancel</button>
+  </div>
 </div>
 
 <script src="partyCards.js"></script>
