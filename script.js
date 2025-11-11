@@ -1,88 +1,76 @@
-// Signup Handler
 document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signupForm");
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const preview = document.getElementById("preview");
+  let capturedImage = null;
+
+  // Start webcam
+  if (video) {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => console.error("Error accessing webcam:", err));
+  }
+
+  // Capture image
+  const captureBtn = document.getElementById("captureBtn");
+  if (captureBtn) {
+    captureBtn.addEventListener("click", () => {
+      const context = canvas.getContext("2d");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      capturedImage = canvas.toDataURL("image/png"); // Base64 string
+      preview.src = capturedImage;
+      preview.style.display = "block";
+    });
+  }
+
+  // Signup form submit
   if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      if (!capturedImage) {
+        alert("Please capture your face before registering!");
+        return;
+      }
+
       const user = {
         name: document.getElementById("name").value,
         email: document.getElementById("email").value,
         password: document.getElementById("password").value,
         age: document.getElementById("age").value,
-        Phone: document.getElementById("phone").value,
+        phone: document.getElementById("phone").value,
         gender: document.getElementById("gender").value,
-        role: document.getElementById("role").value.toUpperCase()
+        role: document.getElementById("role").value.toUpperCase(),
+        faceImage: capturedImage   // Send Base64 image to backend
       };
 
-       try {
+      try {
         const response = await fetch('http://localhost:8080/api/Register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(user)
         });
 
         if (response.ok) {
-            const message = await response.text();
-            alert(message); // Show success message
-            window.location.href = 'index.html'
+          const message = await response.text();
+          alert(message);
+          window.location.href = 'index.html';
         } else {
-            const errorMessage = await response.text();
-            alert(`Email Already Exist: ${errorMessage}`); // Show error message
+          const errorMessage = await response.text();
+          alert(`Email Already Exist: ${errorMessage}`);
         }
-    } catch (error) {
+      } catch (error) {
         console.error('Error during registration:', error);
         alert('Registration failed. Please try again later.');
-    }
+      }
     });
   }
-
-  // Login Handler
-  // Login Handler
-const loginForm = document.getElementById("loginForm");
-
-if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    const user = {
-      email: email,
-      password: password,
-    };
-
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-
-    try {
-      const response = await fetch('http://localhost:8080/api/Login', {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(user)
-      });
-
-      if (response.ok) {
-        // Save login details and expiry timestamp
-        localStorage.setItem('email', email);
-        localStorage.setItem('password', password);
-        const expiryTime = Date.now() + 2.5 * 60 * 1000; // 2.5 minutes from now
-        localStorage.setItem('expiryTime', expiryTime);
-
-        alert('Login successful');
-        window.location.href = 'voter-auth.html';
-      } else {
-        const errorMessage = await response.text();
-        alert(`Login failed: ${errorMessage}`);
-      }
-    } catch (error) {
-      console.error('Error during login:', error);
-      alert('Login failed. Please try again later.');
-    }
-  });
-}
-
-
 });

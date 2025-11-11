@@ -1,59 +1,90 @@
+/* General Page Styling */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f4f4f4;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  margin: 0;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  margin: 0;
+  min-height: 100vh;
 }
 
+/* Main Container */
 .container {
-  background-color: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  width: 400px;
-}
-
-h1 {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
   text-align: center;
+  width: 350px;
+  max-width: 90%;
+}
+
+/* Heading */
+h2 {
   margin-bottom: 20px;
+  color: #333;
 }
 
-form, #otp-section {
-  display: flex;
-  flex-direction: column;
-}
-
+/* Inputs */
 input {
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
+  display: block;
+  width: 90%;
+  margin: 10px auto;
+  padding: 12px;
   border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  transition: border 0.3s;
 }
 
+input:focus {
+  border: 1px solid #4facfe;
+  outline: none;
+}
+
+/* Buttons */
 button {
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
+  margin-top: 12px;
+  padding: 12px 20px;
+  background: #4facfe;
   border: none;
   border-radius: 8px;
+  color: white;
+  font-size: 15px;
   cursor: pointer;
-  margin-bottom: 10px;
-  transition: background-color 0.3s;
+  transition: background 0.3s;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background: #007adf;
 }
 
+/* Video Section */
+#camera {
+  border: 2px solid #4facfe;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+/* OTP Section */
+#otp-section {
+  margin-top: 15px;
+}
+
+/* Message Text */
 #message {
-  text-align: center;
-  margin-top: 10px;
+  margin-top: 15px;
   font-weight: bold;
+  color: #333;
 }
 
-#email-info {
-  margin-top: 20px;
+/* Success and Error states */
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
 }

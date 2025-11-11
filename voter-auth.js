@@ -1,77 +1,86 @@
-const voterForm = document.getElementById('voter-form');
-const otpSection = document.getElementById('otp-section');
-const verifyOtpBtn = document.getElementById('verify-otp');
-const message = document.getElementById('message');
+const voterForm = document.getElementById("voter-form");
+const otpSection = document.getElementById("otp-section");
+const faceSection = document.getElementById("face-section");
+const message = document.getElementById("message");
 
-let voterData = {};
+let voterData = null;
 
-// Handle form submission
-voterForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
+// Step 1: Start Camera Immediately
+window.onload = () => {
+  startCamera();
+};
 
-  // Collect form data
-  voterData = {
-    name: document.getElementById('name').value.trim(),
-    fatherName: document.getElementById('fatherName').value.trim(),
-    gender: document.getElementById('gender').value.trim(),
-    dob: document.getElementById('dob').value,
-    voterId: document.getElementById('voterId').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    phone: document.getElementById('phone').value.trim()
-  };
+function startCamera() {
+  const camera = document.getElementById("camera");
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => { camera.srcObject = stream; })
+    .catch(err => { console.error("Camera access denied:", err); });
+}
 
-  // Validate input
-  const phoneRegex = /^[6-9]\d{9}$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  
+// Step 2: Capture & Verify Face
+document.getElementById("capture-face").addEventListener("click", async () => {
+  const camera = document.getElementById("camera");
+  const snapshot = document.getElementById("snapshot");
+  const ctx = snapshot.getContext("2d");
+  ctx.drawImage(camera, 0, 0, snapshot.width, snapshot.height);
+  const imageData = snapshot.toDataURL("image/png");
 
   try {
-    const response = await fetch('http://localhost:8080/api/voter/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(voterData)
+    const response = await fetch("http://localhost:8080/api/voter/verify-face", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: imageData })
     });
 
     const result = await response.text();
-
-    // Handle duplicate voter ID
-    if (response.status === 409) {
-      message.textContent = "This Voter ID is already registered. Please use a unique Voter ID.";
-      return;
-    }
-
     message.textContent = result;
 
-    // Show OTP section on success
     if (response.ok) {
-      otpSection.style.display = 'flex';
+      faceSection.style.display = "none"; // hide face check
+      voterForm.style.display = "block";  // show voter card form
     }
   } catch (error) {
-    message.textContent = 'Server error while verifying voter.';
+    message.textContent = "Error verifying face.";
     console.error(error);
   }
 });
 
-// Handle OTP verification
-verifyOtpBtn.addEventListener('click', async () => {
-  const otp = document.getElementById('otp').value.trim();
-
-  if (!otp) {
-    message.textContent = "Please enter OTP.";
-    return;
-  }
+// Step 3: Verify Voter (Card Validation)
+voterForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const voterId = document.getElementById("voterId").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
 
   try {
-    const response = await fetch('http://localhost:8080/api/voter/verify-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: voterData.email,
-        otp: otp,
-        voterId: voterData.voterId,
-        name: voterData.name
-      })
+    const response = await fetch("http://localhost:8080/api/voter/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ voterId, email, phone })
+    });
+
+    const result = await response.text();
+    message.textContent = result;
+
+    if (response.ok) {
+      voterData = { voterId, email, phone };
+      otpSection.style.display = "flex";
+    }
+  } catch (error) {
+    message.textContent = "Error verifying voter.";
+    console.error(error);
+  }
+});
+
+// Step 4: Verify OTP
+document.getElementById("verify-otp").addEventListener("click", async () => {
+  const otp = document.getElementById("otp").value;
+
+  try {
+    const response = await fetch("http://localhost:8080/api/voter/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ voterId: voterData.voterId, otp })
     });
 
     const result = await response.text();
@@ -79,12 +88,12 @@ verifyOtpBtn.addEventListener('click', async () => {
 
     if (response.ok) {
       setTimeout(() => {
-        sessionStorage.setItem('voterId', voterData.voterId);
-        window.location.href = 'partySelection.html';
+        sessionStorage.setItem("voterId", voterData.voterId);
+        window.location.href = "partySelection.html";
       }, 1500);
     }
   } catch (error) {
-    message.textContent = 'Error verifying OTP.';
+    message.textContent = "Error verifying OTP.";
     console.error(error);
   }
 });

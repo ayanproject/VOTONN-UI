@@ -19,7 +19,13 @@ body {
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
     width: 90%;
-    max-width: 400px;
+    max-width: 420px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 1rem;
+    color: #333;
 }
 
 form {
@@ -32,8 +38,34 @@ input {
     margin: 0.5rem 0;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 1rem;
 }
 
+/* Webcam Section */
+#cameraContainer {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#camera {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 10px;
+    border: 2px solid #4b79a1;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#capturedImage {
+    margin-top: 0.8rem;
+    max-width: 150px;
+    border: 2px solid #4b79a1;
+    border-radius: 8px;
+    display: none;
+}
+
+/* Buttons */
 button {
     padding: 0.8rem;
     margin-top: 1rem;
@@ -42,6 +74,8 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
 }
 
 button:hover {

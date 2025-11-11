@@ -1,35 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Voter Verification</title>
-  <link rel="stylesheet" href="voter-auth.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voter Authentication</title>
+  <link rel="stylesheet" href="voter-auth.css">
 </head>
 <body>
   <div class="container">
-    <h1>Voter Verification</h1>
+    <h2>Voter Authentication</h2>
 
-    <form id="voter-form">
-      <input type="text" id="name" placeholder="Name" required />
-      <input type="text" id="fatherName" placeholder="Father's Name" required />
-      <input type="text" id="gender" placeholder="Gender" required />
-      <input type="date" id="dob" placeholder="Date of Birth" required />
-      <input type="text" id="voterId" placeholder="Voter ID" required />
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="tel" id="phone" placeholder="Phone" required />
+    <!-- Step 1: Face Validation -->
+    <div id="face-section" style="display: flex; flex-direction: column; align-items: center;">
+      <video id="camera" autoplay playsinline width="320" height="240"></video>
+      <canvas id="snapshot" width="320" height="240" style="display:none;"></canvas>
+      <button id="capture-face">Capture & Verify Face</button>
+    </div>
+
+    <!-- Step 2: Card Validation -->
+    <form id="voter-form" style="display:none;">
+      <input type="text" id="voterId" placeholder="Enter Voter ID" required>
+      <input type="email" id="email" placeholder="Enter Email" required>
+      <input type="tel" id="phone" placeholder="Enter Phone Number" required>
       <button type="submit">Verify Voter</button>
     </form>
 
-    <div id="otp-section" style="display: none;">
-      <input type="text" id="otp" placeholder="Enter OTP" required />
+    <!-- Step 3: OTP Section -->
+    <div id="otp-section" style="display: none; flex-direction: column; align-items: center;">
+      <input type="text" id="otp" placeholder="Enter OTP">
       <button id="verify-otp">Verify OTP</button>
     </div>
 
-    <p id="email-info" style="display: none; text-align: center; font-weight: bold; color: green;">
-      A confirmation email has been sent. Please check your inbox to continue the voting process.
-    </p>
-
+    <!-- Message -->
     <p id="message"></p>
   </div>
 
