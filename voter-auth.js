@@ -26,7 +26,7 @@ document.getElementById("capture-face").addEventListener("click", async () => {
   const imageData = snapshot.toDataURL("image/png");
 
   try {
-    const response = await fetch("http://localhost:8080/api/voter/verify-face", {
+    const response = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voter/verify-face", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ image: imageData })
@@ -53,7 +53,7 @@ voterForm.addEventListener("submit", async (e) => {
   const phone = document.getElementById("phone").value;
 
   try {
-    const response = await fetch("http://localhost:8080/api/voter/verify", {
+    const response = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voter/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ voterId, email, phone })
@@ -77,7 +77,7 @@ document.getElementById("verify-otp").addEventListener("click", async () => {
   const otp = document.getElementById("otp").value;
 
   try {
-    const response = await fetch("http://localhost:8080/api/voter/verify-otp", {
+    const response = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voter/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ voterId: voterData.voterId, otp })
