@@ -1,5 +1,8 @@
-// Signup Handler
+// =================================================================
+// == script.js (UPDATED)
+// =================================================================
 document.addEventListener("DOMContentLoaded", () => {
+  // Signup Handler
   const signupForm = document.getElementById("signupForm");
   if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
@@ -11,82 +14,77 @@ document.addEventListener("DOMContentLoaded", () => {
         age: document.getElementById("age").value,
         phone: document.getElementById("phone").value,
         gender: document.getElementById("gender").value,
-        role: document.getElementById("role").value.toUpperCase()
+        role: document.getElementById("role").value.toUpperCase(),
       };
-      
-       try {
-        //console.log('${process.env.USER_REGISTER}')
-        const response = await fetch('https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(user),
         });
 
         if (response.ok) {
-            sessionStorage.setItem('email', email);
-            sessionStorage.setItem('password', password);
-            const message = await response.text();
-            alert(message); // Show success message
-            window.location.href = 'heroSection.html'
+          const message = await response.text();
+          alert(message + ". Please log in to continue."); // Show success
+          
+          // DANGER: DO NOT store email or password in session/local storage.
+          // We removed those lines.
+          
+          window.location.href = LOGIN_PAGE; // Redirect to login page
         } else {
-            const errorMessage = await response.text();
-            alert(`Email Already Exist: ${errorMessage}`); // Show error message
+          // Get the JSON error from our GlobalExceptionHandler
+          const errorData = await response.json();
+          alert(`Registration Failed: ${errorData.message}`); // Show specific error
         }
-    } catch (error) {
-        console.error('Error during registration:', error);
-        alert('Registration failed. Please try again later.');
-    }
+      } catch (error) {
+        console.error("Error during registration:", error);
+        alert("Registration failed. Please try again later.");
+      }
     });
   }
 
   // Login Handler
   const loginForm = document.getElementById("loginForm");
 
-if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
 
-    const user = {
-      email: email,
-      password: password,
-    };
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
+          method: "POST",
+          headers: {
+            // We DO NOT send Basic Auth. We send a JSON body.
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
 
-    const headers = new Headers();
-    headers.append('Authorization', 'Basic ' + btoa(email + ':' + password));
-    headers.append('Content-Type', 'application/json');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Invalid credentials");
+        }
 
-    try {
-      const response = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/login", {
-        method: "POST",
-        headers: {
-          "Authorization": "Basic " + btoa(`${email}:${password}`),
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
+        // === THIS IS THE JWT LOGIC ===
+        // 1. Get the JSON response which contains the token
+        const data = await response.json();
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Invalid credentials");
+        // 2. Save the token using our auth helper
+        saveToken(data.token);
+
+        alert("Login successful!");
+        window.location.href = "heroSection.html";
+        
+      } catch (err) {
+        console.error("Login error:", err);
+        alert(`Login failed: ${err.message}`);
       }
-
-      sessionStorage.setItem("email", email);
-      sessionStorage.setItem("isLoggedIn", "true");
-
-      alert("Login successful!");
-      window.location.href = "heroSection.html";
-
-    } catch (err) {
-      console.error("Login error:", err);
-      alert("Login failed. Please try again.");
-    }
-
-  });
-}
-
+    });
+  }
 });

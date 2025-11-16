@@ -1,12 +1,11 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const expiryTime = localStorage.getItem("expiryTime");
+// =================================================================
+// == partyCards.js (UPDATED)
+// == Assumes auth.js is included in the HTML
+// =================================================================
 
-  if (!expiryTime || Date.now() > parseInt(expiryTime)) {
-    alert("Session expired. Please login again.");
-    localStorage.clear();
-    window.location.href = "index.html";
-  }
-});
+// 1. Check for authentication as soon as the page loads
+// This replaces your old expiryTime check
+document.addEventListener("DOMContentLoaded", checkAuth);
 
 const params = new URLSearchParams(window.location.search);
 const partyName = params.get("party");
@@ -14,7 +13,8 @@ const partyName = params.get("party");
 // ------------------ LOAD PARTY DETAILS -----------------------
 async function loadPartyDetails() {
   try {
-    const response = await fetch(`https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/party?partyName=${partyName}`);
+    // This is a PUBLIC endpoint, so no auth header is needed.
+    const response = await fetch(`${API_BASE_URL}/api/party?partyName=${partyName}`);
     if (response.ok) {
       const party = await response.json();
       const html = `
@@ -26,7 +26,7 @@ async function loadPartyDetails() {
             <img src="partySelection/${party.leaderUrl}" alt="${party.partyName}" class="party-image">
             <div class="party-name">${party.partyName}</div>
           </div>
-        . <div class="info-section">
+          <div class="info-section">
             <div><strong>Leader:</strong> ${party.leader}</div>
             <div><strong>Description:</strong> ${party.description}</div>
             <div><strong>Mission:</strong> ${party.mission}</div>
@@ -57,16 +57,22 @@ async function handleVoteProcess() {
 
   if (!voterId || !email) {
     alert("Session error: Missing voter ID or email. Please log in again.");
-    window.location.href = "index.html";
+    window.location.href = LOGIN_PAGE;
     return;
   }
 
+  // 2. Get auth headers
+  const authHeaders = createAuthHeaders();
+  authHeaders.append("Content-Type", "application/json");
+
   try {
-    const sendOtpRes = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voters/verify", {
+    const sendOtpRes = await fetch(`${API_BASE_URL}/api/voters/verify`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders, // 3. Add auth headers
       body: JSON.stringify({ voterId, email, name }),
     });
+
+    handleAuthError(sendOtpRes); // 4. Handle auth errors
 
     if (sendOtpRes.ok) {
       alert("OTP has been sent to your registered email.");
@@ -91,22 +97,31 @@ async function verifyOtpBeforeSubmit() {
     alert("Please enter OTP.");
     return;
   }
+  
+  const authHeaders = createAuthHeaders();
+  authHeaders.append("Content-Type", "application/json");
 
   try {
-    const verifyRes = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voters/verify-otp", {
+    // === Verify OTP (Protected) ===
+    const verifyRes = await fetch(`${API_BASE_URL}/api/voters/verify-otp`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders, // Add auth headers
       body: JSON.stringify({ email, otp, voterId, name }),
     });
+
+    handleAuthError(verifyRes);
 
     if (verifyRes.ok) {
       alert("OTP verified successfully! Submitting your vote...");
 
-      const voteRes = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voter/submit-vote", {
+      // === Submit Vote (Protected) ===
+      const voteRes = await fetch(`${API_BASE_URL}/api/voter/submit-vote`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders, // Add auth headers
         body: JSON.stringify({ voterId, partyName, email }),
       });
+
+      handleAuthError(voteRes);
 
       if (voteRes.ok) {
         const msg = await voteRes.text();
@@ -114,28 +129,29 @@ async function verifyOtpBeforeSubmit() {
         alert(msg);
         window.location.href = "thankyou.html";
       } else {
-  	    const err = await voteRes.text();
-  	    alert("Vote submission failed: " + err);
-  	  }
+        const err = await voteRes.text();
+        alert("Vote submission failed: " + err);
+      }
     } else {
-  	  const err = await verifyRes.text();
-  	  alert("OTP verification failed: " + err);
-  	}
+      const err = await verifyRes.text();
+      alert("OTP verification failed: " + err);
+    }
   } catch (error) {
     console.error("Error verifying OTP or submitting vote:", error);
     alert("Something went wrong. Please try again.");
   }
 }
 
-// ------------------ OTP MODAL FUNCTIONS -----------------------
+// ... (rest of your modal functions are fine) ...
 function showOtpModal() {
   document.getElementById("otpModal").style.display = "block";
   document.getElementById("otpInput").value = "";
-  document.getElementById("otpInput").focus(); // ✅ 's' has been removed
+  document.getElementById("otpInput").focus();
 }
 
 function closeOtpModal() {
   document.getElementById("otpModal").style.display = "none";
 }
 
+// Load party details when the page loads
 window.onload = loadPartyDetails;

@@ -1,3 +1,11 @@
+// =================================================================
+// == registration.js (UPDATED)
+// == Assumes auth.js is included in the HTML
+// =================================================================
+
+// 1. Check for authentication as soon as the page loads
+document.addEventListener("DOMContentLoaded", checkAuth);
+
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const captureBtn = document.getElementById("captureBtn");
@@ -9,10 +17,10 @@ let capturedBlob = null;
 
 // 🔹 Start Webcam
 navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => {
+  .then((stream) => {
     video.srcObject = stream;
   })
-  .catch(err => {
+  .catch((err) => {
     alert("Camera access denied!");
     console.error(err);
   });
@@ -24,13 +32,12 @@ captureBtn.addEventListener("click", () => {
   canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  canvas.toBlob(blob => {
+  canvas.toBlob((blob) => {
     capturedBlob = blob;
     capturedImage.src = URL.createObjectURL(blob);
   }, "image/jpeg");
 });
 
-// 🔹 Form Submit
 // 🔹 Form Submit
 registrationForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -39,6 +46,13 @@ registrationForm.addEventListener("submit", async (e) => {
     alert("Please capture your face before submitting!");
     return;
   }
+  
+  // 2. Get the auth headers
+  const authHeaders = createAuthHeaders();
+  if (!authHeaders.has("Authorization")) {
+      logout(); // Failsafe, though checkAuth() should have caught this
+      return;
+  }
 
   const voter = {
     name: document.getElementById("name").value,
@@ -46,34 +60,38 @@ registrationForm.addEventListener("submit", async (e) => {
     gender: document.getElementById("gender").value,
     dob: document.getElementById("dob").value,
     voterId: document.getElementById("voterId").value,
-    email: document.getElementById("email").value, // still included in voter JSON
+    email: document.getElementById("email").value,
     phone: document.getElementById("phone").value,
-    secretPin: document.getElementById("secretPin").value
+    secretPin: document.getElementById("secretPin").value,
   };
 
   const formData = new FormData();
   formData.append("voter", new Blob([JSON.stringify(voter)], { type: "application/json" }));
-  formData.append("userEmail", voter.email); // ✅ Required by backend
+  formData.append("userEmail", voter.email);
   formData.append("faceImage", capturedBlob, "face.jpg");
 
   try {
-    const res = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voters/register-with-face", {
+    const res = await fetch(`${API_BASE_URL}/api/voters/register-with-face`, {
       method: "POST",
-      body: formData
+      // 3. Add the Authorization header
+      // DO NOT set Content-Type, browser does it for FormData
+      headers: authHeaders, 
+      body: formData,
     });
+
+    // 4. Handle auth errors
+    handleAuthError(res); 
 
     if (res.ok) {
       const data = await res.json();
       statusMsg.innerText = "✅ Registration successful for " + data.name;
-      statusMsg.style.color = "green"; 
+      statusMsg.style.color = "green";
       localStorage.setItem("voterId", voter.voterId);
-      localStorage.setItem("email", data.email);       // Save the email from the server response
+      localStorage.setItem("email", data.email);
       localStorage.setItem("name", data.name);
 
-      const expiry = Date.now() + (60 * 60 * 1000);
+      const expiry = Date.now() + 60 * 60 * 1000;
       localStorage.setItem("expiryTime", expiry);
-      // alert("Registration successful! Proceed to select a party.");
-      // window.location.href = "partySelection.html"; // Or whatever your party selection page is
     } else {
       const errText = await res.text();
       statusMsg.innerText = "❌ Registration failed: " + errText;
@@ -85,4 +103,3 @@ registrationForm.addEventListener("submit", async (e) => {
     statusMsg.style.color = "red";
   }
 });
-

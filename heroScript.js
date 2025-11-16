@@ -125,7 +125,7 @@ async function proceedToVote() {
     formData.append("probe_image", blob, "face.jpg"); // ✅ match FastAPI
 
 
-    const res = await fetch("https://votonn-deepface-api-hfhqf9hae9g5hsdp.southeastasia-01.azurewebsites.net/verify", {   // ✅ switched to Python
+    const res = await fetch("http://13.49.73.113:8000/verify", {   // ✅ switched to Python
       method: "POST",
       body: formData
     });
