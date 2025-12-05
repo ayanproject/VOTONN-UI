@@ -41,7 +41,12 @@
 
       <!-- Webcam Capture -->
       
-
+       <div class="camera">
+        <video id="video" autoplay></video>
+        <button type="button" id="captureBtn">📸 Capture Face</button>
+        <canvas id="canvas" style="display:none;"></canvas>
+        <img id="capturedImage" alt="Captured Face">
+      </div>
       <button type="submit">Register</button>
     </form>
     <p id="status"></p>
