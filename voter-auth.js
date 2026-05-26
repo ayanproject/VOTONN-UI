@@ -1,3 +1,11 @@
+// =================================================================
+// == voter-auth.js (UPDATED)
+// == Assumes auth.js is included in the HTML
+// =================================================================
+
+// 1. Check for authentication as soon as the page loads
+document.addEventListener("DOMContentLoaded", checkAuth);
+
 const voterForm = document.getElementById("voter-form");
 const otpSection = document.getElementById("otp-section");
 const faceSection = document.getElementById("face-section");
@@ -12,9 +20,14 @@ window.onload = () => {
 
 function startCamera() {
   const camera = document.getElementById("camera");
-  navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => { camera.srcObject = stream; })
-    .catch(err => { console.error("Camera access denied:", err); });
+  navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .then((stream) => {
+      camera.srcObject = stream;
+    })
+    .catch((err) => {
+      console.error("Camera access denied:", err);
+    });
 }
 
 // Step 2: Capture & Verify Face
@@ -25,19 +38,24 @@ document.getElementById("capture-face").addEventListener("click", async () => {
   ctx.drawImage(camera, 0, 0, snapshot.width, snapshot.height);
   const imageData = snapshot.toDataURL("image/png");
 
+  // 2. Get auth headers
+  const authHeaders = createAuthHeaders();
+  authHeaders.append("Content-Type", "application/json");
+
   try {
-    const response = await fetch("http://localhost:8080/api/voter/verify-face", {
+    const response = await fetch(`${API_BASE_URL}/api/voter/verify-face`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: imageData })
+      headers: authHeaders, // 3. Add auth headers
+      body: JSON.stringify({ image: imageData }),
     });
 
+    handleAuthError(response); // 4. Handle auth errors
     const result = await response.text();
     message.textContent = result;
 
     if (response.ok) {
-      faceSection.style.display = "none"; // hide face check
-      voterForm.style.display = "block";  // show voter card form
+      faceSection.style.display = "none";
+      voterForm.style.display = "block";
     }
   } catch (error) {
     message.textContent = "Error verifying face.";
@@ -52,13 +70,17 @@ voterForm.addEventListener("submit", async (e) => {
   const email = document.getElementById("email").value;
   const phone = document.getElementById("phone").value;
 
+  const authHeaders = createAuthHeaders();
+  authHeaders.append("Content-Type", "application/json");
+
   try {
-    const response = await fetch("http://localhost:8080/api/voter/verify", {
+    const response = await fetch(`${API_BASE_URL}/api/voter/verify`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ voterId, email, phone })
+      headers: authHeaders, // Add auth headers
+      body: JSON.stringify({ voterId, email, phone }),
     });
 
+    handleAuthError(response);
     const result = await response.text();
     message.textContent = result;
 
@@ -76,13 +98,17 @@ voterForm.addEventListener("submit", async (e) => {
 document.getElementById("verify-otp").addEventListener("click", async () => {
   const otp = document.getElementById("otp").value;
 
+  const authHeaders = createAuthHeaders();
+  authHeaders.append("Content-Type", "application/json");
+
   try {
-    const response = await fetch("http://localhost:8080/api/voter/verify-otp", {
+    const response = await fetch(`${API_BASE_URL}/api/voter/verify-otp`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ voterId: voterData.voterId, otp })
+      headers: authHeaders, // Add auth headers
+      body: JSON.stringify({ voterId: voterData.voterId, otp }),
     });
 
+    handleAuthError(response);
     const result = await response.text();
     message.textContent = result;
 
