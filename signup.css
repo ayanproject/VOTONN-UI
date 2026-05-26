@@ -1,0 +1,102 @@
+/* =============================================
+   VOTONN — signup.css  (extends login.css)
+   ============================================= */
+
+/* Wider card for signup (2-column fields) */
+.form-card--wide {
+  max-width: 520px;
+}
+
+/* Two-column field rows */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Select field styling */
+.field-wrap--select { position: relative; }
+
+.field-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 40px !important;  /* room for custom arrow */
+}
+.field-select option {
+  background: #1e2130;
+  color: #fff;
+}
+.field-select:invalid,
+.field-select option[value=""] {
+  color: #5a6278;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 12px; top: 50%;
+  transform: translateY(-50%);
+  width: 16px; height: 16px;
+  color: #5a6278;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+.field-wrap--select:focus-within .select-arrow { color: var(--accent); }
+
+/* Password rules checklist */
+.rules-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 12px;
+  margin-top: 10px;
+  padding: 0;
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  color: var(--muted-2);
+  transition: color 0.2s;
+}
+
+.rule-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--muted-2);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.rule.passed { color: var(--success); }
+.rule.passed .rule-dot { background: var(--success); }
+
+/* Signup page glow comes from the right */
+.bg-glow--right {
+  background: radial-gradient(ellipse 60% 60% at 80% 50%, rgba(59,108,244,0.12) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 20% 20%, rgba(59,108,244,0.07) 0%, transparent 70%);
+}
+
+/* Responsive: stack on mobile */
+@media (max-width: 640px) {
+  .field-row { grid-template-columns: 1fr; }
+  .rules-list { grid-template-columns: 1fr; }
+  .form-card--wide { max-width: 100%; }
+}
+
+/* Google button wrapper */
+.google-btn-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+  min-height: 44px;
+}
+
+/* Override Google's rendered button width to match our card */
+.google-btn-wrap > div,
+.google-btn-wrap iframe {
+  width: 100% !important;
+  border-radius: 10px !important;
+}

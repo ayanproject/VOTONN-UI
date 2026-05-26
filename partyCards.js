@@ -14,7 +14,7 @@ const partyName = params.get("party");
 // ------------------ LOAD PARTY DETAILS -----------------------
 async function loadPartyDetails() {
   try {
-    const response = await fetch(`https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/party?partyName=${partyName}`);
+    const response = await fetch(`http://localhost:8080/api/party?partyName=${partyName}`);
     if (response.ok) {
       const party = await response.json();
       const html = `
@@ -62,7 +62,7 @@ async function handleVoteProcess() {
   }
 
   try {
-    const sendOtpRes = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voters/verify", {
+    const sendOtpRes = await fetch("http://localhost:8080/api/voters/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ voterId, email, name }),
@@ -93,7 +93,7 @@ async function verifyOtpBeforeSubmit() {
   }
 
   try {
-    const verifyRes = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voters/verify-otp", {
+    const verifyRes = await fetch("http://localhost:8080/api/voters/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp, voterId, name }),
@@ -102,7 +102,7 @@ async function verifyOtpBeforeSubmit() {
     if (verifyRes.ok) {
       alert("OTP verified successfully! Submitting your vote...");
 
-      const voteRes = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voter/submit-vote", {
+      const voteRes = await fetch("http://localhost:8080/api/voter/submit-vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ voterId, partyName, email }),

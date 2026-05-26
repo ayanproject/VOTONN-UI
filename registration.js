@@ -49,6 +49,7 @@ registrationForm.addEventListener("submit", async (e) => {
     email: document.getElementById("email").value, // still included in voter JSON
     phone: document.getElementById("phone").value,
     secretPin: document.getElementById("secretPin").value
+   
   };
 
   const formData = new FormData();
@@ -57,7 +58,7 @@ registrationForm.addEventListener("submit", async (e) => {
   formData.append("faceImage", capturedBlob, "face.jpg");
 
   try {
-    const res = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voters/register-with-face", {
+    const res = await fetch("http://localhost:8080/api/voters/register-with-face", {
       method: "POST",
       body: formData
     });
