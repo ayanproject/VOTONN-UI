@@ -126,21 +126,9 @@ async function proceedToVote() {
     if (!blob) { alert("Failed to capture image. Try again."); return; }
 
     const formData = new FormData();
-<<<<<<< HEAD
     formData.append("voter_id",    voterId);
     formData.append("secret_pin",  secretPin);
     formData.append("probe_image", blob, "face.jpg");
-=======
-    formData.append("voter_id", voterId);        // ✅ match FastAPI
-    formData.append("secret_pin", secretPin);    // ✅ match FastAPI
-    formData.append("probe_image", blob, "face.jpg"); // ✅ match FastAPI
-
-
-    const res = await fetch("http://13.49.73.113:8000/verify", {   // ✅ switched to Python
-      method: "POST",
-      body: formData
-    });
->>>>>>> dee9eb55aae54d80b0ec5f908f00783d45e3b5a1
 
     const res    = await fetch("http://127.0.0.1:8000/verify", { method: "POST", body: formData });
     const result = await res.json();
