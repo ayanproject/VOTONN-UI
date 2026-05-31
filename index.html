@@ -19,8 +19,7 @@
     Get it from: https://www.google.com/recaptcha/admin/create
     Until you replace it, login still works (captcha is gracefully skipped).
   -->
-  <script src="https://www.google.com/recaptcha/api.js?render=6LchjfosAAAAAGa7eq4eY3a0iV9dAIATqmVbjM6f" async
-    defer></script>
+  
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -105,6 +104,21 @@
             </div>
             <span class="field-error" id="passwordError"></span>
           </div>
+          <div class="field-group">
+  <label class="field-label" for="captchaInput">Security Check</label>
+  <div class="field-wrap" style="display: flex; gap: 12px; margin-bottom: 8px;">
+    <div style="flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; display: flex; justify-content: center; align-items: center; overflow: hidden; height: 48px;">
+      <img id="captchaImage" src="" alt="CAPTCHA loading..." style="height: 100%; width: auto;" />
+    </div>
+    <button type="button" id="refreshCaptchaBtn" style="background: var(--ink-3); border: 1px solid var(--border); color: var(--muted); border-radius: 10px; padding: 0 16px; cursor: pointer; transition: color 0.2s;">
+      ↻
+    </button>
+  </div>
+  <div class="field-wrap">
+    <input type="text" id="captchaInput" class="field-input" placeholder="Enter the characters above" required autocomplete="off" />
+  </div>
+  <span class="field-error" id="captchaError"></span>
+</div>
 
           <!-- Forgot password link -->
           <div class="forgot-row">
@@ -121,11 +135,7 @@
 
         </form>
 
-        <p class="captcha-notice">
-          Protected by reCAPTCHA —
-          <a href="https://policies.google.com/privacy" target="_blank">Privacy</a> &amp;
-          <a href="https://policies.google.com/terms" target="_blank">Terms</a>
-        </p>
+       
       </div>
     </div>
 

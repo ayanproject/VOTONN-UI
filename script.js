@@ -1,21 +1,21 @@
 // ============================================================
-//  VOTONN — login-script.js  (fixed)
+//  VOTONN — login-script.js  (Updated for Custom CAPTCHA)
 //  ✅ Uses renderButton instead of prompt() — fixes FedCM error
-//  ✅ Graceful reCAPTCHA — login still works without real key
+//  ✅ Replaced Google reCAPTCHA with Custom Server-side CAPTCHA
 // ============================================================
 
 // ── REPLACE THESE WITH YOUR REAL KEYS ──────────────────────
-const GOOGLE_CLIENT_ID = "162297433169-hshj2oecea7ra2qomdeqjrv5en7ik931.apps.googleusercontent.com";
-const RECAPTCHA_SITE_KEY = "6LchjfosAAAAAGa7eq4eY3a0iV9dAIATqmVbjM6f";
+const GOOGLE_CLIENT_ID = "1024481193894-rb7hqih2vc62nvpsurrq9c56fok1tter.apps.googleusercontent.com";
 const BACKEND_URL = "http://localhost:8080/api";
 // ────────────────────────────────────────────────────────────
 
-
 // ============================================================
-// 1.  GOOGLE IDENTITY SERVICES
-//     Uses renderButton (not prompt) — works on http://localhost
+// 1.  GOOGLE IDENTITY SERVICES & INITIALIZATION
 // ============================================================
 window.addEventListener("load", () => {
+  // Load our custom CAPTCHA as soon as the page loads
+  loadCustomCaptcha();
+
   if (typeof google === "undefined") {
     console.warn("Google GIS script not loaded.");
     return;
@@ -24,11 +24,10 @@ window.addEventListener("load", () => {
   google.accounts.id.initialize({
     client_id: GOOGLE_CLIENT_ID,
     callback: handleGoogleCredentialResponse,
-    use_fedcm_for_prompt: false,   // FIX: disables FedCM — prevents NetworkError on localhost
+    use_fedcm_for_prompt: false,
     auto_select: false,
   });
 
-  // Render Google's official button inside our wrapper div
   const container = document.getElementById("googleBtnContainer");
   if (container) {
     google.accounts.id.renderButton(container, {
@@ -41,7 +40,6 @@ window.addEventListener("load", () => {
     });
   }
 });
-
 
 // ============================================================
 // 2.  GOOGLE OAUTH2 CALLBACK
@@ -70,26 +68,30 @@ async function handleGoogleCredentialResponse(credentialResponse) {
   }
 }
 
+// ============================================================
+// 3.  CUSTOM ALPHANUMERIC CAPTCHA
+// ============================================================
+let currentCaptchaSessionId = null;
 
-// ============================================================
-// 3.  RECAPTCHA v3 — graceful fallback if key not set yet
-// ============================================================
-function getCaptchaToken(action = "login") {
-  return new Promise((resolve) => {
-    if (
-      RECAPTCHA_SITE_KEY === "6LchjfosAAAAAGa7eq4eY3a0iV9dAI" ||
-      typeof grecaptcha === "undefined"
-    ) {
-      console.warn("reCAPTCHA key not set — skipping captcha.");
-      resolve("");
-      return;
+async function loadCustomCaptcha() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/captcha`);
+    const data = await res.json();
+    
+    // Expecting backend to return { imageBase64: "...", sessionId: "..." }
+    const captchaImg = document.getElementById("captchaImage");
+    if (captchaImg && data.imageBase64) {
+      captchaImg.src = `data:image/png;base64,${data.imageBase64}`;
     }
-    grecaptcha.ready(() => {
-      grecaptcha.execute(RECAPTCHA_SITE_KEY, { action }).then(resolve).catch(() => resolve(""));
-    });
-  });
+    currentCaptchaSessionId = data.sessionId;
+  } catch (err) {
+    console.error("Failed to load CAPTCHA:", err);
+    showToast("Failed to load security check.", "error");
+  }
 }
 
+// Attach to the refresh button
+document.getElementById("refreshCaptchaBtn")?.addEventListener("click", loadCustomCaptcha);
 
 // ============================================================
 // 4.  PASSWORD STRENGTH
@@ -123,7 +125,6 @@ function validatePasswordStrong(password) {
   return PASSWORD_RULES.filter((r) => !r.test(password)).map((r) => r.label);
 }
 
-
 // ============================================================
 // 5.  FORM HELPERS
 // ============================================================
@@ -135,7 +136,6 @@ function setFieldError(inputId, errorId, message) {
 }
 function clearFieldError(inputId, errorId) { setFieldError(inputId, errorId, ""); }
 function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
-
 
 // ============================================================
 // 6.  PASSWORD VISIBILITY TOGGLE
@@ -160,7 +160,6 @@ function setupPasswordToggle(btnId, inputId, iconId) {
 }
 setupPasswordToggle("togglePassword", "loginPassword", "eyeIcon");
 
-
 // ============================================================
 // 7.  BUTTON LOADING
 // ============================================================
@@ -172,7 +171,6 @@ function setButtonLoading(btn, loading, label) {
   if (textEl) textEl.textContent = label;
   if (spinnerEl) spinnerEl.style.display = loading ? "block" : "none";
 }
-
 
 // ============================================================
 // 8.  TOAST
@@ -200,7 +198,6 @@ function showToast(message, type = "info") {
   setTimeout(() => toast.remove(), 3500);
 }
 
-
 // ============================================================
 // 9.  LIVE VALIDATION
 // ============================================================
@@ -215,9 +212,14 @@ if (emailInput) {
   emailInput.addEventListener("input", () => clearFieldError("loginEmail", "emailError"));
 }
 
+// Clear CAPTCHA error on typing
+const captchaInputEl = document.getElementById("captchaInput");
+if (captchaInputEl) {
+  captchaInputEl.addEventListener("input", () => clearFieldError("captchaInput", "captchaError"));
+}
 
 // ============================================================
-// 10.  LOGIN FORM SUBMIT
+// 10. LOGIN FORM SUBMIT
 // ============================================================
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
@@ -225,28 +227,41 @@ if (loginForm) {
     e.preventDefault();
     const email = document.getElementById("loginEmail").value.trim();
     const password = document.getElementById("loginPassword").value;
+    const captchaAnswer = document.getElementById("captchaInput") ? document.getElementById("captchaInput").value.trim() : "";
     const loginBtn = document.getElementById("loginBtn");
 
     let hasError = false;
+    
     if (!email) {
       setFieldError("loginEmail", "emailError", "Email is required."); hasError = true;
     } else if (!validateEmail(email)) {
       setFieldError("loginEmail", "emailError", "Enter a valid email address."); hasError = true;
     }
+    
     if (!password) {
       setFieldError("loginPassword", "passwordError", "Password is required."); hasError = true;
     }
+    
+    if (!captchaAnswer) {
+      setFieldError("captchaInput", "captchaError", "CAPTCHA is required."); hasError = true;
+    }
+    
     if (hasError) return;
 
     setButtonLoading(loginBtn, true, "Signing in…");
     try {
-      const captchaToken = await getCaptchaToken("login");
       const response = await fetch(`${BACKEND_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, captchaToken }),
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          captchaAnswer, 
+          captchaSessionId: currentCaptchaSessionId 
+        }),
       });
       const data = await response.json();
+      
       if (response.ok && data.token) {
         sessionStorage.setItem("token", data.token);
         sessionStorage.setItem("isLoggedIn", "true");
@@ -254,9 +269,13 @@ if (loginForm) {
         showToast("Login successful! Redirecting…", "success");
         setTimeout(() => (window.location.href = "heroSection.html"), 800);
       } else {
-        const msg = data.message || "Invalid email or password.";
+        const msg = data.message || "Invalid email, password, or CAPTCHA.";
         setFieldError("loginPassword", "passwordError", msg);
         showToast(msg, "error");
+        
+        // Refresh CAPTCHA and clear input on failure
+        loadCustomCaptcha();
+        document.getElementById("captchaInput").value = "";
       }
     } catch (err) {
       console.error("Login error:", err);
