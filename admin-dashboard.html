@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VOTONN — Admin Dashboard</title>
+    <link rel="stylesheet" href="admin-style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inter:wght@300;400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo">
+                <span class="logo-mark">▲</span>
+                <span class="logo-text">VOTONN</span>
+            </div>
+            <span class="admin-badge">ADMIN PANEL</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Overview</div>
+            <div class="nav-item active" onclick="navigate('overview', this)">
+                <span class="nav-icon">📊</span> Dashboard
+            </div>
+
+            <div class="nav-section-label">Requests</div>
+            <div class="nav-item" onclick="navigate('deletions', this)">
+                <span class="nav-icon">🗑️</span> Voter Deletions
+                <span class="badge-count" id="delCount">3</span>
+            </div>
+            <div class="nav-item" onclick="navigate('corrections', this)">
+                <span class="nav-icon">✏️</span> Data Corrections
+                <span class="badge-count" id="corrCount">5</span>
+            </div>
+
+            <div class="nav-section-label">Election</div>
+            <div class="nav-item" onclick="navigate('results', this)">
+                <span class="nav-icon">🗳️</span> Election Results
+            </div>
+            <div class="nav-item" onclick="navigate('voters', this)">
+                <span class="nav-icon">👥</span> Voter Registry
+            </div>
+
+            <div class="nav-section-label">System</div>
+            <div class="nav-item" onclick="navigate('audit', this)">
+                <span class="nav-icon">📋</span> Audit Log
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="admin-profile">
+                <div class="avatar">AD</div>
+                <div class="admin-info">
+                    <p>Admin</p>
+                    <span>admin@votonn.com</span>
+                </div>
+                <button class="logout-btn" title="Logout" onclick="logout()">⏻</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── Main ── -->
+    <main class="main">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div>
+                <div class="topbar-title" id="pageTitle">Dashboard</div>
+                <div class="topbar-subtitle" id="pageSubtitle">System Overview</div>
+            </div>
+            <div class="topbar-right">
+                <span class="topbar-time" id="liveTime"></span>
+                <button class="notif-btn" title="Notifications">🔔<span class="notif-dot"></span></button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+
+            <!-- ══ OVERVIEW PAGE ══ -->
+            <div class="page active" id="page-overview">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="top-stripe" style="background:linear-gradient(90deg,#1a6fd4,#4fc3f7)"></div>
+                        <span class="s-icon">👥</span>
+                        <div class="s-val" style="color:var(--accent)">3,89,837</div>
+                        <div class="s-label">Total Registered Voters</div>
+                        <div class="s-change up">▲ 1,204 this month</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="top-stripe" style="background:linear-gradient(90deg,#22c55e,#86efac)"></div>
+                        <span class="s-icon">🗳️</span>
+                        <div class="s-val" style="color:var(--green)">2,41,875</div>
+                        <div class="s-label">Total Votes Cast</div>
+                        <div class="s-change up">▲ 62.05% turnout</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="top-stripe" style="background:linear-gradient(90deg,#f97316,#fbbf24)"></div>
+                        <span class="s-icon">✏️</span>
+                        <div class="s-val" style="color:var(--orange)">5</div>
+                        <div class="s-label">Pending Corrections</div>
+                        <div class="s-change down">● Needs review</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="top-stripe" style="background:linear-gradient(90deg,#ef4444,#fb923c)"></div>
+                        <span class="s-icon">🗑️</span>
+                        <div class="s-val" style="color:var(--red)">3</div>
+                        <div class="s-label">Pending Deletions</div>
+                        <div class="s-change down">● Needs review</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <!-- Recent activity -->
+                    <div class="card">
+                        <div class="card-accent"></div>
+                        <h2>Recent Activity</h2>
+                        <ul class="timeline">
+                            <li class="tl-item">
+                                <div class="tl-dot" style="background:var(--green);border-color:var(--green)"></div>
+                                <div class="tl-body">
+                                    <div class="tl-title">Deletion request DEL-0043 approved</div>
+                                    <div class="tl-time">Today, 10:24 AM</div>
+                                </div>
+                            </li>
+                            <li class="tl-item">
+                                <div class="tl-dot" style="background:var(--orange);border-color:var(--orange)"></div>
+                                <div class="tl-body">
+                                    <div class="tl-title">Correction COR-0081 submitted (Email)</div>
+                                    <div class="tl-time">Today, 09:11 AM</div>
+                                </div>
+                            </li>
+                            <li class="tl-item">
+                                <div class="tl-dot" style="background:var(--accent);border-color:var(--accent)"></div>
+                                <div class="tl-body">
+                                    <div class="tl-title">New voter registered — VID-389837</div>
+                                    <div class="tl-time">Yesterday, 4:52 PM</div>
+                                </div>
+                            </li>
+                            <li class="tl-item">
+                                <div class="tl-dot" style="background:var(--red);border-color:var(--red)"></div>
+                                <div class="tl-body">
+                                    <div class="tl-title">Correction COR-0079 rejected (DOB mismatch)</div>
+                                    <div class="tl-time">Yesterday, 2:10 PM</div>
+                                </div>
+                            </li>
+                            <li class="tl-item">
+                                <div class="tl-dot" style="background:var(--gold);border-color:var(--gold)"></div>
+                                <div class="tl-body">
+                                    <div class="tl-title">Election results published</div>
+                                    <div class="tl-time">Jun 1, 11:00 AM</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div>
+                        <div class="card">
+                            <div class="card-accent card-accent--gold"></div>
+                            <h2>Pending Actions</h2>
+                            <div class="detail-row">
+                                <span class="detail-label">Deletion Requests</span>
+                                <span class="detail-val" style="color:var(--red)">3 pending</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Correction Requests</span>
+                                <span class="detail-val" style="color:var(--orange)">5 pending</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Avg. Resolution Time</span>
+                                <span class="detail-val">4.2 days</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Approval Rate</span>
+                                <span class="detail-val" style="color:var(--green)">84%</span>
+                            </div>
+                            <br>
+                            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                                <button class="btn btn--solid" onclick="navigate('deletions', null)">Review
+                                    Deletions</button>
+                                <button class="btn btn--ghost" onclick="navigate('corrections', null)">Review
+                                    Corrections</button>
+                            </div>
+                        </div>
+                        <div class="card" style="margin-top:20px">
+                            <div class="card-accent card-accent--green"></div>
+                            <h2>Election Status</h2>
+                            <div class="detail-row">
+                                <span class="detail-label">Current Phase</span>
+                                <span class="detail-val"><span class="badge-status badge-approved">Results
+                                        Live</span></span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Leading Party</span>
+                                <span class="detail-val" style="color:var(--gold)">🌷 Bharat Janata Party</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Votes Counted</span>
+                                <span class="detail-val">3,89,837 / 3,89,837</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Result Integrity</span>
+                                <span class="detail-val" style="color:var(--green)">✔ Verified & Sealed</span>
+                            </div>
+                            <br>
+                            <button class="btn btn--gold" onclick="navigate('results', null)">View Full Results</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ DELETIONS PAGE ══ -->
+            <div class="page" id="page-deletions">
+                <div class="table-wrap">
+                    <div class="table-toolbar">
+                        <input type="text" class="search-input" placeholder="🔍  Search by name or voter ID…"
+                            oninput="filterTable('delTable', this.value)" />
+                        <button class="filter-btn active" onclick="filterStatus('delTable', 'all', this)">All</button>
+                        <button class="filter-btn" onclick="filterStatus('delTable', 'PENDING', this)">Pending</button>
+                        <button class="filter-btn"
+                            onclick="filterStatus('delTable', 'APPROVED', this)">Approved</button>
+                        <button class="filter-btn"
+                            onclick="filterStatus('delTable', 'REJECTED', this)">Rejected</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table id="delTable">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Voter Name</th>
+                                    <th>Voter ID</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-status="PENDING">
+                                    <td style="color:var(--accent);font-weight:600">DEL-0044</td>
+                                    <td>Ramesh Kumar Sharma</td>
+                                    <td class="td-muted">WB/24/001234</td>
+                                    <td class="td-muted">02 Jun 2025</td>
+                                    <td><span class="badge-status badge-pending">Pending</span></td>
+                                    <td>
+                                        <button class="act-btn act-view"
+                                            onclick="viewDeletion('DEL-0044','Ramesh Kumar Sharma','WB/24/001234','02 Jun 2025')">View</button>
+                                        <button class="act-btn act-approve"
+                                            onclick="actionRequest('DEL-0044','approve','del')">Approve</button>
+                                        <button class="act-btn act-reject"
+                                            onclick="actionRequest('DEL-0044','reject','del')">Reject</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="PENDING">
+                                    <td style="color:var(--accent);font-weight:600">DEL-0045</td>
+                                    <td>Sunita Devi Yadav</td>
+                                    <td class="td-muted">UP/22/005578</td>
+                                    <td class="td-muted">01 Jun 2025</td>
+                                    <td><span class="badge-status badge-pending">Pending</span></td>
+                                    <td>
+                                        <button class="act-btn act-view"
+                                            onclick="viewDeletion('DEL-0045','Sunita Devi Yadav','UP/22/005578','01 Jun 2025')">View</button>
+                                        <button class="act-btn act-approve"
+                                            onclick="actionRequest('DEL-0045','approve','del')">Approve</button>
+                                        <button class="act-btn act-reject"
+                                            onclick="actionRequest('DEL-0045','reject','del')">Reject</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="PENDING">
+                                    <td style="color:var(--accent);font-weight:600">DEL-0046</td>
+                                    <td>Mohammed Ilyas Khan</td>
+                                    <td class="td-muted">DL/23/009910</td>
+                                    <td class="td-muted">01 Jun 2025</td>
+                                    <td><span class="badge-status badge-pending">Pending</span></td>
+                                    <td>
+                                        <button class="act-btn act-view"
+                                            onclick="viewDeletion('DEL-0046','Mohammed Ilyas Khan','DL/23/009910','01 Jun 2025')">View</button>
+                                        <button class="act-btn act-approve"
+                                            onclick="actionRequest('DEL-0046','approve','del')">Approve</button>
+                                        <button class="act-btn act-reject"
+                                            onclick="actionRequest('DEL-0046','reject','del')">Reject</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="APPROVED">
+                                    <td style="color:var(--accent);font-weight:600">DEL-0043</td>
+                                    <td>Anjali Priya Singh</td>
+                                    <td class="td-muted">MH/21/007761</td>
+                                    <td class="td-muted">30 May 2025</td>
+                                    <td><span class="badge-status badge-approved">Approved</span></td>
+                                    <td><button class="act-btn act-view"
+                                            onclick="viewDeletion('DEL-0043','Anjali Priya Singh','MH/21/007761','30 May 2025')">View</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="REJECTED">
+                                    <td style="color:var(--accent);font-weight:600">DEL-0042</td>
+                                    <td>Suresh Babu Nair</td>
+                                    <td class="td-muted">KL/20/003340</td>
+                                    <td class="td-muted">28 May 2025</td>
+                                    <td><span class="badge-status badge-rejected">Rejected</span></td>
+                                    <td><button class="act-btn act-view"
+                                            onclick="viewDeletion('DEL-0042','Suresh Babu Nair','KL/20/003340','28 May 2025')">View</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ CORRECTIONS PAGE ══ -->
+            <div class="page" id="page-corrections">
+                <div class="table-wrap">
+                    <div class="table-toolbar">
+                        <input type="text" class="search-input" placeholder="🔍  Search by name or voter ID…"
+                            oninput="filterTable('corrTable', this.value)" />
+                        <button class="filter-btn active" onclick="filterStatus('corrTable', 'all', this)">All</button>
+                        <button class="filter-btn" onclick="filterStatus('corrTable', 'PENDING', this)">Pending</button>
+                        <button class="filter-btn"
+                            onclick="filterStatus('corrTable', 'APPROVED', this)">Approved</button>
+                        <button class="filter-btn"
+                            onclick="filterStatus('corrTable', 'REJECTED', this)">Rejected</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table id="corrTable">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Voter Name</th>
+                                    <th>Voter ID</th>
+                                    <th>Field</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-status="PENDING">
+                                    <td style="color:var(--orange);font-weight:600">COR-0081</td>
+                                    <td>Priya Mehta</td>
+                                    <td class="td-muted">GJ/23/011230</td>
+                                    <td><span style="color:var(--accent);font-size:12px">Email</span></td>
+                                    <td class="td-muted">02 Jun 2025</td>
+                                    <td><span class="badge-status badge-pending">Pending</span></td>
+                                    <td>
+                                        <button class="act-btn act-view"
+                                            onclick="viewCorrection('COR-0081','Priya Mehta','GJ/23/011230','Email')">View</button>
+                                        <button class="act-btn act-approve"
+                                            onclick="actionRequest('COR-0081','approve','corr')">Approve</button>
+                                        <button class="act-btn act-reject"
+                                            onclick="actionRequest('COR-0081','reject','corr')">Reject</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="PENDING">
+                                    <td style="color:var(--orange);font-weight:600">COR-0080</td>
+                                    <td>Arjun Das</td>
+                                    <td class="td-muted">WB/22/008891</td>
+                                    <td><span style="color:var(--accent);font-size:12px">Date of Birth</span></td>
+                                    <td class="td-muted">01 Jun 2025</td>
+                                    <td><span class="badge-status badge-pending">Pending</span></td>
+                                    <td>
+                                        <button class="act-btn act-view"
+                                            onclick="viewCorrection('COR-0080','Arjun Das','WB/22/008891','Date of Birth')">View</button>
+                                        <button class="act-btn act-approve"
+                                            onclick="actionRequest('COR-0080','approve','corr')">Approve</button>
+                                        <button class="act-btn act-reject"
+                                            onclick="actionRequest('COR-0080','reject','corr')">Reject</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="PENDING">
+                                    <td style="color:var(--orange);font-weight:600">COR-0079</td>
+                                    <td>Kavitha Reddy</td>
+                                    <td class="td-muted">AP/21/004432</td>
+                                    <td><span style="color:var(--accent);font-size:12px">Full Name</span></td>
+                                    <td class="td-muted">31 May 2025</td>
+                                    <td><span class="badge-status badge-pending">Pending</span></td>
+                                    <td>
+                                        <button class="act-btn act-view"
+                                            onclick="viewCorrection('COR-0079','Kavitha Reddy','AP/21/004432','Full Name')">View</button>
+                                        <button class="act-btn act-approve"
+                                            onclick="actionRequest('COR-0079','approve','corr')">Approve</button>
+                                        <button class="act-btn act-reject"
+                                            onclick="actionRequest('COR-0079','reject','corr')">Reject</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="PENDING">
+                                    <td style="color:var(--orange);font-weight:600">COR-0078</td>
+                                    <td>Vijay Krishnan</td>
+                                    <td class="td-muted">TN/20/002210</td>
+                                    <td><span style="color:var(--accent);font-size:12px">Father's Name</span></td>
+                                    <td class="td-muted">30 May 2025</td>
+                                    <td><span class="badge-status badge-pending">Pending</span></td>
+                                    <td>
+                                        <button class="act-btn act-view"
+                                            onclick="viewCorrection('COR-0078','Vijay Krishnan','TN/20/002210','Father\'s Name')">View</button>
+                                        <button class="act-btn act-approve"
+                                            onclick="actionRequest('COR-0078','approve','corr')">Approve</button>
+                                        <button class="act-btn act-reject"
+                                            onclick="actionRequest('COR-0078','reject','corr')">Reject</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="PENDING">
+                                    <td style="color:var(--orange);font-weight:600">COR-0077</td>
+                                    <td>Deepa Nambiar</td>
+                                    <td class="td-muted">KL/22/007743</td>
+                                    <td><span style="color:var(--accent);font-size:12px">Security PIN</span></td>
+                                    <td class="td-muted">29 May 2025</td>
+                                    <td><span class="badge-status badge-pending">Pending</span></td>
+                                    <td>
+                                        <button class="act-btn act-view"
+                                            onclick="viewCorrection('COR-0077','Deepa Nambiar','KL/22/007743','Security PIN')">View</button>
+                                        <button class="act-btn act-approve"
+                                            onclick="actionRequest('COR-0077','approve','corr')">Approve</button>
+                                        <button class="act-btn act-reject"
+                                            onclick="actionRequest('COR-0077','reject','corr')">Reject</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="APPROVED">
+                                    <td style="color:var(--orange);font-weight:600">COR-0076</td>
+                                    <td>Rajan Pillai</td>
+                                    <td class="td-muted">KL/19/000990</td>
+                                    <td><span style="color:var(--accent);font-size:12px">Email</span></td>
+                                    <td class="td-muted">27 May 2025</td>
+                                    <td><span class="badge-status badge-approved">Approved</span></td>
+                                    <td><button class="act-btn act-view"
+                                            onclick="viewCorrection('COR-0076','Rajan Pillai','KL/19/000990','Email')">View</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="REJECTED">
+                                    <td style="color:var(--orange);font-weight:600">COR-0075</td>
+                                    <td>Meena Gupta</td>
+                                    <td class="td-muted">RJ/21/003310</td>
+                                    <td><span style="color:var(--accent);font-size:12px">Date of Birth</span></td>
+                                    <td class="td-muted">25 May 2025</td>
+                                    <td><span class="badge-status badge-rejected">Rejected</span></td>
+                                    <td><button class="act-btn act-view"
+                                            onclick="viewCorrection('COR-0075','Meena Gupta','RJ/21/003310','Date of Birth')">View</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ RESULTS PAGE ══ -->
+            <div class="page" id="page-results">
+                <div class="winner-card">
+                    <div class="winner-trophy">🏆</div>
+                    <div>
+                        <div class="winner-label">Leading Party</div>
+                        <div class="winner-name">🌷 Bharat Janata Party</div>
+                        <div class="winner-votes">2,41,875 votes — 62.05% share</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-accent card-accent--gold"></div>
+                    <h2>Party-wise Vote Tally</h2>
+                    <div id="resultsData">
+                        <div class="result-bar-wrap">
+                            <div class="party-row">
+                                <span class="party-name">🌷 Bharat Janata Party</span>
+                                <span class="party-pct">62.05%</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="--pct:62.05%;--clr:#ff6600"></div>
+                            </div>
+                            <div class="vote-count">2,41,875 votes</div>
+                        </div>
+                        <div class="result-bar-wrap">
+                            <div class="party-row">
+                                <span class="party-name">✋ Indian National Congress</span>
+                                <span class="party-pct">28.03%</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="--pct:28.03%;--clr:#00a0dc"></div>
+                            </div>
+                            <div class="vote-count">1,09,312 votes</div>
+                        </div>
+                        <div class="result-bar-wrap">
+                            <div class="party-row">
+                                <span class="party-name">🌾 All India Trinamool Congress</span>
+                                <span class="party-pct">7.04%</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="--pct:7.04%;--clr:#20b2aa"></div>
+                            </div>
+                            <div class="vote-count">27,450 votes</div>
+                        </div>
+                        <div class="result-bar-wrap">
+                            <div class="party-row">
+                                <span class="party-name">🔷 Others</span>
+                                <span class="party-pct">2.88%</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="--pct:2.88%;--clr:#888"></div>
+                            </div>
+                            <div class="vote-count">11,200 votes</div>
+                        </div>
+                    </div>
+                    <div
+                        style="margin-top:20px;padding-top:16px;border-top:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+                        <span style="font-size:12px;color:var(--muted)">* Results sealed and verified by Election
+                            Commission of India</span>
+                        <button class="btn btn--ghost" onclick="exportResults()">📥 Export Results</button>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="card">
+                        <div class="card-accent card-accent--green"></div>
+                        <h2>Voter Turnout</h2>
+                        <div class="detail-row"><span class="detail-label">Total Eligible Voters</span><span
+                                class="detail-val">3,89,837</span></div>
+                        <div class="detail-row"><span class="detail-label">Votes Cast</span><span class="detail-val"
+                                style="color:var(--green)">2,41,875</span></div>
+                        <div class="detail-row"><span class="detail-label">Abstained</span><span class="detail-val"
+                                style="color:var(--muted)">1,47,962</span></div>
+                        <div class="detail-row"><span class="detail-label">Turnout %</span><span class="detail-val"
+                                style="color:var(--green);font-weight:600">62.05%</span></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-accent card-accent--red"></div>
+                        <h2>Integrity Report</h2>
+                        <div class="detail-row"><span class="detail-label">Blockchain Verified</span><span
+                                class="detail-val" style="color:var(--green)">✔ Yes</span></div>
+                        <div class="detail-row"><span class="detail-label">Tamper Attempts</span><span
+                                class="detail-val" style="color:var(--green)">0 detected</span></div>
+                        <div class="detail-row"><span class="detail-label">Audit Trail</span><span class="detail-val"
+                                style="color:var(--green)">✔ Complete</span></div>
+                        <div class="detail-row"><span class="detail-label">EC Certification</span><span
+                                class="detail-val" style="color:var(--gold)">✔ Certified</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ VOTER REGISTRY PAGE ══ -->
+            <div class="page" id="page-voters">
+                <div class="table-wrap">
+                    <div class="table-toolbar">
+                        <input type="text" class="search-input" placeholder="🔍  Search voter by name, ID, email…"
+                            oninput="filterTable('voterTable', this.value)" />
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table id="voterTable">
+                            <thead>
+                                <tr>
+                                    <th>Voter ID</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Date of Birth</th>
+                                    <th>Voted</th>
+                                    <th>Registered On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="color:var(--accent);font-weight:600">WB/24/001234</td>
+                                    <td>Ramesh Kumar Sharma</td>
+                                    <td class="td-muted">ramesh.sharma@gmail.com</td>
+                                    <td class="td-muted">14 Mar 1971</td>
+                                    <td><span class="badge-status badge-approved">Yes</span></td>
+                                    <td class="td-muted">12 Jan 2024</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:var(--accent);font-weight:600">GJ/23/011230</td>
+                                    <td>Priya Mehta</td>
+                                    <td class="td-muted">priya.mehta@yahoo.com</td>
+                                    <td class="td-muted">22 Aug 1990</td>
+                                    <td><span class="badge-status badge-approved">Yes</span></td>
+                                    <td class="td-muted">03 Mar 2023</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:var(--accent);font-weight:600">UP/22/005578</td>
+                                    <td>Sunita Devi Yadav</td>
+                                    <td class="td-muted">sunita.yadav@outlook.com</td>
+                                    <td class="td-muted">05 Feb 1965</td>
+                                    <td><span class="badge-status badge-rejected">No</span></td>
+                                    <td class="td-muted">08 Jun 2022</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:var(--accent);font-weight:600">DL/23/009910</td>
+                                    <td>Mohammed Ilyas Khan</td>
+                                    <td class="td-muted">ilyas.khan@gmail.com</td>
+                                    <td class="td-muted">30 Nov 1988</td>
+                                    <td><span class="badge-status badge-approved">Yes</span></td>
+                                    <td class="td-muted">19 Sep 2023</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:var(--accent);font-weight:600">AP/21/004432</td>
+                                    <td>Kavitha Reddy</td>
+                                    <td class="td-muted">kavitha.r@rediffmail.com</td>
+                                    <td class="td-muted">17 Jul 1982</td>
+                                    <td><span class="badge-status badge-approved">Yes</span></td>
+                                    <td class="td-muted">22 Feb 2021</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:var(--accent);font-weight:600">TN/20/002210</td>
+                                    <td>Vijay Krishnan</td>
+                                    <td class="td-muted">vijay.k@gmail.com</td>
+                                    <td class="td-muted">09 Apr 1979</td>
+                                    <td><span class="badge-status badge-rejected">No</span></td>
+                                    <td class="td-muted">11 Nov 2020</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ AUDIT LOG PAGE ══ -->
+            <div class="page" id="page-audit">
+                <div class="card">
+                    <div class="card-accent"></div>
+                    <h2>System Audit Log</h2>
+                    <ul class="timeline">
+                        <li class="tl-item">
+                            <div class="tl-dot" style="background:var(--green);border-color:var(--green)"></div>
+                            <div class="tl-body">
+                                <div class="tl-title">DEL-0043 approved by admin@votonn.com — voter WB/24/001234 removed
+                                    from electoral roll</div>
+                                <div class="tl-time">02 Jun 2025, 10:24 AM · IP: 192.168.1.1</div>
+                            </div>
+                        </li>
+                        <li class="tl-item">
+                            <div class="tl-dot" style="background:var(--accent);border-color:var(--accent)"></div>
+                            <div class="tl-body">
+                                <div class="tl-title">Admin login — admin@votonn.com authenticated via JWT</div>
+                                <div class="tl-time">02 Jun 2025, 09:02 AM · IP: 192.168.1.1</div>
+                            </div>
+                        </li>
+                        <li class="tl-item">
+                            <div class="tl-dot" style="background:var(--red);border-color:var(--red)"></div>
+                            <div class="tl-body">
+                                <div class="tl-title">COR-0075 rejected — document verification failed (DOB mismatch)
+                                </div>
+                                <div class="tl-time">01 Jun 2025, 3:45 PM · IP: 192.168.1.1</div>
+                            </div>
+                        </li>
+                        <li class="tl-item">
+                            <div class="tl-dot" style="background:var(--gold);border-color:var(--gold)"></div>
+                            <div class="tl-body">
+                                <div class="tl-title">Election results published and sealed — 3,89,837 votes tallied
+                                </div>
+                                <div class="tl-time">01 Jun 2025, 11:00 AM · System Event</div>
+                            </div>
+                        </li>
+                        <li class="tl-item">
+                            <div class="tl-dot" style="background:var(--green);border-color:var(--green)"></div>
+                            <div class="tl-body">
+                                <div class="tl-title">COR-0076 approved — voter KL/19/000990 email updated</div>
+                                <div class="tl-time">27 May 2025, 2:15 PM · IP: 192.168.1.1</div>
+                            </div>
+                        </li>
+                        <li class="tl-item">
+                            <div class="tl-dot" style="background:var(--orange);border-color:var(--orange)"></div>
+                            <div class="tl-body">
+                                <div class="tl-title">Bulk voter registration completed — 1,204 new voters added</div>
+                                <div class="tl-time">26 May 2025, 8:00 AM · System Event</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div><!-- end .content -->
+    </main>
+
+    <!-- ══ DELETION VIEW MODAL ══ -->
+    <div class="modal-overlay" id="delModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">🗑️ Deletion Request</span>
+                <button class="modal-close" onclick="closeModal('delModal')">✕</button>
+            </div>
+            <div class="modal-body" id="delModalBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn--ghost" onclick="closeModal('delModal')">Close</button>
+                <button class="btn btn--red"
+                    onclick="closeModal('delModal');actionRequest(currentReqId,'reject','del')">Reject</button>
+                <button class="btn btn--solid"
+                    onclick="closeModal('delModal');actionRequest(currentReqId,'approve','del')">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CORRECTION VIEW MODAL ══ -->
+    <div class="modal-overlay" id="corrModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">✏️ Correction Request</span>
+                <button class="modal-close" onclick="closeModal('corrModal')">✕</button>
+            </div>
+            <div class="modal-body" id="corrModalBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn--ghost" onclick="closeModal('corrModal')">Close</button>
+                <button class="btn btn--red"
+                    onclick="closeModal('corrModal');actionRequest(currentReqId,'reject','corr')">Reject</button>
+                <button class="btn btn--solid"
+                    onclick="closeModal('corrModal');actionRequest(currentReqId,'approve','corr')">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CONFIRM MODAL ══ -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal" style="width:380px">
+            <div class="modal-header">
+                <span class="modal-title" id="confirmTitle">Confirm Action</span>
+                <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMsg"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--ghost" onclick="closeModal('confirmModal')">Cancel</button>
+                <button class="btn btn--solid" id="confirmOkBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ Toast Container ══ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="admin-script.js"></script>
+</body>
+
+</html>
