@@ -55,6 +55,8 @@ async function handleGoogleCredentialResponse(credentialResponse) {
 
     if (res.ok && data.token) {
       sessionStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("jwtToken", data.token);
       sessionStorage.setItem("isLoggedIn", "true");
       if (data.name) sessionStorage.setItem("userName", data.name);
       showToast("Google login successful!", "success");
@@ -77,7 +79,7 @@ async function loadCustomCaptcha() {
   try {
     const res = await fetch(`${BACKEND_URL}/captcha`);
     const data = await res.json();
-    
+
     // Expecting backend to return { imageBase64: "...", sessionId: "..." }
     const captchaImg = document.getElementById("captchaImage");
     if (captchaImg && data.imageBase64) {
@@ -231,21 +233,21 @@ if (loginForm) {
     const loginBtn = document.getElementById("loginBtn");
 
     let hasError = false;
-    
+
     if (!email) {
       setFieldError("loginEmail", "emailError", "Email is required."); hasError = true;
     } else if (!validateEmail(email)) {
       setFieldError("loginEmail", "emailError", "Enter a valid email address."); hasError = true;
     }
-    
+
     if (!password) {
       setFieldError("loginPassword", "passwordError", "Password is required."); hasError = true;
     }
-    
+
     if (!captchaAnswer) {
       setFieldError("captchaInput", "captchaError", "CAPTCHA is required."); hasError = true;
     }
-    
+
     if (hasError) return;
 
     setButtonLoading(loginBtn, true, "Signing in…");
@@ -253,26 +255,36 @@ if (loginForm) {
       const response = await fetch(`${BACKEND_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          email, 
-          password, 
-          captchaAnswer, 
-          captchaSessionId: currentCaptchaSessionId 
+        body: JSON.stringify({
+          email,
+          password,
+          captchaAnswer,
+          captchaSessionId: currentCaptchaSessionId
         }),
       });
       const data = await response.json();
-      
+
       if (response.ok && data.token) {
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("isLoggedIn", "true");
-        sessionStorage.setItem("email", email);
+        // Save to localStorage so all application views can access it securely
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("jwtToken", data.token);
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("adminEmail", email); // Helpful for the dashboard sidebar profile layout
+        localStorage.setItem("userRole", data.role || "USER");
+
         showToast("Login successful! Redirecting…", "success");
-        setTimeout(() => (window.location.href = "heroSection.html"), 800);
+
+        // Role-based redirection
+        if (data.role === "ADMIN") {
+          setTimeout(() => (window.location.href = "admin-dashboard.html"), 800);
+        } else {
+          setTimeout(() => (window.location.href = "heroSection.html"), 800);
+        }
       } else {
         const msg = data.message || "Invalid email, password, or CAPTCHA.";
         setFieldError("loginPassword", "passwordError", msg);
         showToast(msg, "error");
-        
+
         // Refresh CAPTCHA and clear input on failure
         loadCustomCaptcha();
         document.getElementById("captchaInput").value = "";

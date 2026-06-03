@@ -58,7 +58,7 @@ async function fetchPendingDeletions() {
     }
 }
 
-async function fetchPendingPendingCorrections() {
+async function fetchPendingCorrections() {
     try {
         const res = await fetch(`${API_BASE}/correction/pending`, {
             headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }

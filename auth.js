@@ -14,6 +14,7 @@ const LOGIN_PAGE = "index.html"; // Change this if your login page is named diff
  */
 function saveToken(token) {
   localStorage.setItem("jwtToken", token);
+  localStorage.setItem("token", token);
 }
 
 /**
@@ -21,7 +22,7 @@ function saveToken(token) {
  * @returns {string | null} The stored token, or null if not found.
  */
 function getToken() {
-  return localStorage.getItem("jwtToken");
+  return localStorage.getItem("jwtToken") || localStorage.getItem("token");
 }
 
 /**
@@ -29,6 +30,7 @@ function getToken() {
  */
 function removeToken() {
   localStorage.removeItem("jwtToken");
+  localStorage.removeItem("token");
 }
 
 /**
