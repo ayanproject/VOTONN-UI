@@ -178,17 +178,29 @@ function updateOverviewStats() {
 
 // ── Deep Verification Modal Bindings ─────────────────────────────────────
 
+function getDocumentUrl(path) {
+    if (!path) return '#';
+    const normalizedPath = path.replace(/\\/g, '/');
+    if (normalizedPath.startsWith('http://') || normalizedPath.startsWith('https://')) {
+        return normalizedPath;
+    }
+    const serverRoot = API_BASE.replace('/api', '');
+    return `${serverRoot}/${normalizedPath}`;
+}
+
 function viewDeletion(id) {
     currentReqId = id;
     const req = state.deletions.find(r => r.id === id);
     if (!req) return;
+
+    const docUrl = getDocumentUrl(req.deathCertificatePath);
 
     document.getElementById('delModalBody').innerHTML = `
         <div class="detail-row"><span class="detail-label">Request ID</span><span class="detail-val" style="color:var(--accent)">DEL-${req.id}</span></div>
         <div class="detail-row"><span class="detail-label">Voter Name</span><span class="detail-val">${req.fullName || req.name}</span></div>
         <div class="detail-row"><span class="detail-label">Voter ID</span><span class="detail-val">${req.voterId}</span></div>
         <div class="detail-row"><span class="detail-label">Father's Name</span><span class="detail-val">${req.fatherName || 'N/A'}</span></div>
-        <div class="detail-row"><span class="detail-label">Document Path</span><span class="detail-val"><a href="${req.certificateUrl || '#'}" target="_blank" style="color:var(--accent); text-decoration:none;">📎 view_death_certificate.pdf</a></span></div>
+        <div class="detail-row"><span class="detail-label">Document Path</span><span class="detail-val"><a href="${docUrl}" target="_blank" style="color:var(--accent); text-decoration:none;">📎 view_death_certificate.pdf</a></span></div>
     `;
     document.getElementById('delModal').classList.add('open');
 }
@@ -198,13 +210,15 @@ function viewCorrection(id) {
     const req = state.corrections.find(r => r.id === id);
     if (!req) return;
 
+    const docUrl = getDocumentUrl(req.documentPath);
+
     document.getElementById('corrModalBody').innerHTML = `
         <div class="detail-row"><span class="detail-label">Request ID</span><span class="detail-val" style="color:var(--orange)">COR-${req.id}</span></div>
         <div class="detail-row"><span class="detail-label">Voter ID</span><span class="detail-val">${req.voterId}</span></div>
         <div class="detail-row"><span class="detail-label">Target Field</span><span class="detail-val" style="color:var(--accent)">${req.fieldToCorrect}</span></div>
         <div class="detail-row"><span class="detail-label">Staged Current State</span><span class="detail-val">${req.currentValue}</span></div>
         <div class="detail-row"><span class="detail-label">Requested Mutation</span><span class="detail-val" style="color:var(--green)">${req.newValue}</span></div>
-        <div class="detail-row"><span class="detail-label">Legal Reference Attachment</span><span class="detail-val"><a href="${req.documentUrl || '#'}" target="_blank" style="color:var(--accent); text-decoration:none;">📎 view_supporting_document.pdf</a></span></div>
+        <div class="detail-row"><span class="detail-label">Legal Reference Attachment</span><span class="detail-val"><a href="${docUrl}" target="_blank" style="color:var(--accent); text-decoration:none;">📎 view_supporting_document.pdf</a></span></div>
     `;
     document.getElementById('corrModal').classList.add('open');
 }
@@ -248,6 +262,7 @@ function actionRequest(id, action, type) {
 
 async function submitResolutionToBackend(id, action, type) {
     const targetRoute = type === 'del' ? 'deletion' : 'correction';
+    const backendAction = action === 'approve' ? 'APPROVED' : (action === 'reject' ? 'REJECTED' : action.toUpperCase());
     try {
         const response = await fetch(`${API_BASE}/${targetRoute}/${id}/resolve`, {
             method: "POST",
@@ -255,7 +270,7 @@ async function submitResolutionToBackend(id, action, type) {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${localStorage.getItem("token")}`
             },
-            body: JSON.stringify({ action: action.toUpperCase() })
+            body: JSON.stringify({ action: backendAction })
         });
 
         if (response.ok) {
