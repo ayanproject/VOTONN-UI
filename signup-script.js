@@ -102,7 +102,6 @@ document
       email: document.getElementById("email").value,
       phone: document.getElementById("phone").value,
       gender: document.getElementById("gender").value,
-      role: document.getElementById("role").value,
       password: document.getElementById("password").value,
     };
 

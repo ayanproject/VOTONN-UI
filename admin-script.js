@@ -296,6 +296,9 @@ function navigate(page, el) {
     if (page === 'results') {
         setTimeout(() => document.querySelectorAll('.bar-fill').forEach(b => b.classList.add('bar-fill--animate')), 100);
     }
+    if (page === 'admin-mgmt') {
+        fetchAdminList();
+    }
 }
 
 function tick() {
@@ -319,5 +322,133 @@ function logout() {
     if (confirm('Terminate secure command workspace application lifecycle session?')) {
         localStorage.clear();
         window.location.href = 'index.html';
+    }
+}
+
+// ── Admin Management Module ─────────────────────────────────────────────────
+
+async function fetchAdminList() {
+    const tbody = document.querySelector('#adminTable tbody');
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted)">Loading…</td></tr>`;
+    try {
+        const res = await fetch(`${API_BASE}/admin/list`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (res.ok) {
+            const admins = await res.json();
+            if (admins.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted)">No administrators found.</td></tr>`;
+                return;
+            }
+            const currentEmail = localStorage.getItem('adminEmail');
+            tbody.innerHTML = admins.map(a => `
+                <tr>
+                    <td style="font-weight:600">${a.name}</td>
+                    <td style="color:var(--accent)">${a.email}</td>
+                    <td class="td-muted">${a.phone}</td>
+                    <td>
+                        ${a.email === currentEmail
+                            ? '<span style="color:var(--muted);font-size:12px">You</span>'
+                            : `<button class="act-btn act-reject" onclick="demoteAdmin('${a.email}')">Remove Admin</button>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--red)">Failed to load admin list.</td></tr>`;
+        }
+    } catch (err) {
+        console.error('Error fetching admin list:', err);
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--red)">Network error.</td></tr>`;
+    }
+}
+
+async function promoteUser() {
+    const email = document.getElementById('promoteEmail').value.trim();
+    if (!email) { toast('❌ Please enter an email address.', 'error'); return; }
+
+    try {
+        const res = await fetch(`${API_BASE}/admin/promote`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            toast('✅ ' + data.message, 'success');
+            document.getElementById('promoteEmail').value = '';
+            fetchAdminList();
+        } else {
+            toast('❌ ' + (data.message || 'Promotion failed.'), 'error');
+        }
+    } catch (err) {
+        toast('🚨 Network error. Could not promote user.', 'error');
+    }
+}
+
+async function demoteAdmin(email) {
+    if (!confirm(`Remove admin access for ${email}? They will become a normal user.`)) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/admin/demote`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            toast('✅ ' + data.message, 'success');
+            fetchAdminList();
+        } else {
+            toast('❌ ' + (data.message || 'Demotion failed.'), 'error');
+        }
+    } catch (err) {
+        toast('🚨 Network error. Could not remove admin.', 'error');
+    }
+}
+
+async function createNewAdmin() {
+    const name = document.getElementById('newAdminName').value.trim();
+    const age = document.getElementById('newAdminAge').value;
+    const email = document.getElementById('newAdminEmail').value.trim();
+    const phone = document.getElementById('newAdminPhone').value.trim();
+    const gender = document.getElementById('newAdminGender').value;
+    const password = document.getElementById('newAdminPassword').value;
+
+    if (!name || !email || !password) {
+        toast('❌ Name, Email, and Password are required.', 'error');
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/admin/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ name, age: parseInt(age) || 0, email, phone, gender, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            toast('✅ ' + data.message, 'success');
+            // Clear form fields
+            document.getElementById('newAdminName').value = '';
+            document.getElementById('newAdminAge').value = '';
+            document.getElementById('newAdminEmail').value = '';
+            document.getElementById('newAdminPhone').value = '';
+            document.getElementById('newAdminPassword').value = '';
+            fetchAdminList();
+        } else {
+            toast('❌ ' + (data.message || 'Failed to create admin.'), 'error');
+        }
+    } catch (err) {
+        toast('🚨 Network error. Could not create admin.', 'error');
     }
 }

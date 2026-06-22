@@ -56,6 +56,9 @@
             <div class="nav-item" onclick="navigate('audit', this)">
                 <span class="nav-icon">📋</span> Audit Log
             </div>
+            <div class="nav-item" onclick="navigate('admin-mgmt', this)">
+                <span class="nav-icon">🛡️</span> Admin Management
+            </div>
         </nav>
 
         <div class="sidebar-footer">
@@ -671,6 +674,102 @@
                             </div>
                         </li>
                     </ul>
+                </div>
+            </div>
+
+            <!-- ══ ADMIN MANAGEMENT PAGE ══ -->
+            <div class="page" id="page-admin-mgmt">
+                <div class="two-col">
+
+                    <!-- Promote Existing User -->
+                    <div class="card">
+                        <div class="card-accent card-accent--green"></div>
+                        <h2>🔼 Promote Existing User</h2>
+                        <p style="color:var(--muted);font-size:13px;margin-bottom:16px">
+                            Enter the email of a registered user to grant admin access.
+                        </p>
+                        <div class="field-group" style="margin-bottom:12px">
+                            <label style="font-size:12px;color:var(--muted);margin-bottom:6px;display:block">User Email</label>
+                            <input type="email" id="promoteEmail" class="search-input" placeholder="user@example.com"
+                                style="width:100%;box-sizing:border-box" />
+                        </div>
+                        <button class="btn btn--solid" onclick="promoteUser()" id="promoteBtn">Promote to Admin</button>
+                    </div>
+
+                    <!-- Create New Admin -->
+                    <div class="card">
+                        <div class="card-accent card-accent--gold"></div>
+                        <h2>➕ Create New Admin</h2>
+                        <p style="color:var(--muted);font-size:13px;margin-bottom:16px">
+                            Create a brand-new administrator account from scratch.
+                        </p>
+                        <div style="display:flex;gap:10px;margin-bottom:10px">
+                            <div style="flex:1">
+                                <label style="font-size:12px;color:var(--muted);margin-bottom:6px;display:block">Full Name</label>
+                                <input type="text" id="newAdminName" class="search-input" placeholder="Admin Name"
+                                    style="width:100%;box-sizing:border-box" />
+                            </div>
+                            <div style="flex:1">
+                                <label style="font-size:12px;color:var(--muted);margin-bottom:6px;display:block">Age</label>
+                                <input type="number" id="newAdminAge" class="search-input" placeholder="30"
+                                    style="width:100%;box-sizing:border-box" />
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;margin-bottom:10px">
+                            <div style="flex:1">
+                                <label style="font-size:12px;color:var(--muted);margin-bottom:6px;display:block">Email</label>
+                                <input type="email" id="newAdminEmail" class="search-input" placeholder="admin@example.com"
+                                    style="width:100%;box-sizing:border-box" />
+                            </div>
+                            <div style="flex:1">
+                                <label style="font-size:12px;color:var(--muted);margin-bottom:6px;display:block">Phone</label>
+                                <input type="tel" id="newAdminPhone" class="search-input" placeholder="+91 98765 43210"
+                                    style="width:100%;box-sizing:border-box" />
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;margin-bottom:10px">
+                            <div style="flex:1">
+                                <label style="font-size:12px;color:var(--muted);margin-bottom:6px;display:block">Gender</label>
+                                <select id="newAdminGender" class="search-input" style="width:100%;box-sizing:border-box;padding:8px 12px">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div style="flex:1">
+                                <label style="font-size:12px;color:var(--muted);margin-bottom:6px;display:block">Password</label>
+                                <input type="password" id="newAdminPassword" class="search-input" placeholder="Strong password"
+                                    style="width:100%;box-sizing:border-box" />
+                            </div>
+                        </div>
+                        <button class="btn btn--gold" onclick="createNewAdmin()" id="createAdminBtn">Create Admin Account</button>
+                    </div>
+
+                </div>
+
+                <!-- Current Admins Table -->
+                <div class="table-wrap" style="margin-top:20px">
+                    <div class="table-toolbar">
+                        <h2 style="margin:0;font-size:16px;color:var(--text)">👥 Current Administrators</h2>
+                        <button class="filter-btn active" onclick="fetchAdminList()">🔄 Refresh</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table id="adminTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" style="text-align:center;color:var(--muted)">Loading admin list…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
