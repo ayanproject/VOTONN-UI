@@ -1,5 +1,5 @@
 // Base URL for your Spring Boot Backend
-const API_BASE_URL = 'http://3.107.237.223:8080/api/forgot-password';
+const API_BASE_URL = '/api/forgot-password';
 
 // State to hold the user's email across steps
 let userEmail = '';

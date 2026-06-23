@@ -4,7 +4,7 @@
 //            Correction and Deletion features.
 // ════════════════════════════════════════════════════════════════════════════
 
-const API_BASE = "http://3.107.237.223:8080/api"; // adjust port if different
+const API_BASE = "/api"; // adjust port if different
 
 // ── Camera Logic (unchanged from your original) ───────────────────────────
 
@@ -130,7 +130,7 @@ async function proceedToVote() {
     formData.append("secret_pin",  secretPin);
     formData.append("probe_image", blob, "face.jpg");
 
-    const res    = await fetch("http://3.107.237.223:8000/verify", { method: "POST", body: formData });
+    const res    = await fetch("/verify", { method: "POST", body: formData });
     const result = await res.json();
 
     if (result.verified === true) {

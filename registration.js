@@ -72,7 +72,7 @@ registrationForm.addEventListener("submit", async (e) => {
   formData.append("faceImage", capturedBlob, "face.jpg");
 
   try {
-    const res = await fetch("http://3.107.237.223:8080/api/voters/register-with-face", {
+    const res = await fetch("/api/voters/register-with-face", {
       method: "POST",
       // 3. Add the Authorization header
       // DO NOT set Content-Type, browser does it for FormData

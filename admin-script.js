@@ -2,7 +2,7 @@
 //  admin-script.js — VOTONN Live Backend Data Integration
 // ════════════════════════════════════════════════════════════════════════════
 
-const API_BASE = "http://3.107.237.223:8080/api";
+const API_BASE = "/api";
 
 // Core State Engine to manage memory data structures for live filtering/search
 let state = {

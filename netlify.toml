@@ -1,0 +1,11 @@
+[[redirects]]
+  from = "/api/*"
+  to = "http://3.107.237.223:8080/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/verify"
+  to = "http://3.107.237.223:8000/verify"
+  status = 200
+  force = true
