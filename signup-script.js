@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://localhost:8080/api";
+const BACKEND_URL = "http://3.107.237.223:8080/api";
 
 const PASSWORD_RULES = [
   {

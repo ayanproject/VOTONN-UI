@@ -6,7 +6,7 @@
 
 // ── REPLACE THESE WITH YOUR REAL KEYS ──────────────────────
 const GOOGLE_CLIENT_ID = "1024481193894-rb7hqih2vc62nvpsurrq9c56fok1tter.apps.googleusercontent.com";
-const BACKEND_URL = "http://localhost:8080/api";
+const BACKEND_URL = "http://3.107.237.223:8080/api";
 // ────────────────────────────────────────────────────────────
 
 // ============================================================

@@ -4,7 +4,7 @@
 // == Include it on ALL your pages.
 // =================================================================
 //http://localhost:8080
-const API_BASE_URL = "https://votonnbackend-a6bgdyfedqfmhqha.southeastasia-01.azurewebsites.net";
+const API_BASE_URL = "http://3.107.237.223:8080";
 
 const LOGIN_PAGE = "index.html"; // Change this if your login page is named differently
 
