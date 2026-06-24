@@ -5,7 +5,7 @@
 // ============================================================
 
 // ── REPLACE THESE WITH YOUR REAL KEYS ──────────────────────
-const GOOGLE_CLIENT_ID = "1024481193894-rb7hqih2vc62nvpsurrq9c56fok1tter.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "930858823292-6nr1enve464pdt8jjbh3ekqoerrq42f5.apps.googleusercontent.com";
 // We now use API_BASE_URL defined in auth.js instead of a local BACKEND_URL
 // ────────────────────────────────────────────────────────────
 
@@ -276,7 +276,7 @@ if (loginForm) {
         if (data.role === "ADMIN") {
           setTimeout(() => (window.location.href = "admin-dashboard.html"), 800);
         } else {
-          setTimeout(() => (window.location.href = "partySelection.html"), 800);
+          setTimeout(() => (window.location.href = "heroSection.html"), 800);
         }
       } else {
         const msg = data.message || "Invalid email, password, or CAPTCHA.";

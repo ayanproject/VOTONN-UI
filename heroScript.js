@@ -164,7 +164,6 @@ function openCorrectionPanel() {
   document.getElementById("corrOpenBtn").style.display     = "none";
 }
 
-// Tracks which field the user selected
 let selectedCorrField = null;
 
 function selectCorrField(field) {
@@ -173,7 +172,7 @@ function selectCorrField(field) {
   event.target.classList.add("pill--active");
 
   const fieldMap = {
-    name:   { label: "Full Name",       type: "text"     },
+    name:   { label: "Full Name",    type: "text"     },
     father: { label: "Father's Name",   type: "text"     },
     dob:    { label: "Date of Birth",   type: "date"     },
     email:  { label: "Email Address",   type: "email"    },
@@ -182,10 +181,10 @@ function selectCorrField(field) {
   const cfg = fieldMap[field];
 
   document.getElementById("corrFormFields").innerHTML = `
-    <input type="text"         id="corrVoterId"   placeholder="Voter ID"                   required />
-    <input type="password"     id="corrPin"        placeholder="Current Security PIN"       maxlength="4" required />
-    <input type="${cfg.type}"  id="corrCurrent"    placeholder="${cfg.label} (current)"     required />
-    <input type="${cfg.type}"  id="corrNew"        placeholder="${cfg.label} (new)"         required />
+    <input type="text"         id="corrVoterId"   placeholder="Voter ID"                 required />
+    <input type="password"     id="corrPin"       placeholder="Current Security PIN"       maxlength="4" required />
+    <input type="${cfg.type}"  id="corrCurrent"   placeholder="${cfg.label} (current)"     required />
+    <input type="${cfg.type}"  id="corrNew"       placeholder="${cfg.label} (new)"         required />
   `;
 
   document.getElementById("corrStep1").style.display = "none";
@@ -224,11 +223,15 @@ async function submitCorrection() {
 
     if (res.ok) {
       alert(`✅ ${data.message}\nRequest ID: ${data.requestId}`);
+      
       // Reset UI
       document.getElementById("correctionPanel").style.display = "none";
       document.getElementById("corrOpenBtn").style.display     = "inline-block";
       document.getElementById("correctionForm").reset();
       backToCorrStep1();
+
+      // ✅ Redirect to heroSection.html on successful submission
+      window.location.href = "heroSection.html";
     } else {
       alert(`❌ ${data.message || "Submission failed. Please try again."}`);
     }
@@ -280,11 +283,15 @@ async function submitDeletion() {
 
     if (res.ok) {
       alert(`✅ ${data.message}\nRequest ID: ${data.requestId}`);
+      
       document.getElementById("deletionPanel").style.display = "none";
       document.getElementById("delOpenBtn").style.display    = "inline-block";
       document.getElementById("deletionForm").reset();
+
+      // ✅ Redirect to heroSection.html on successful submission
+      window.location.href = "heroSection.html";
     } else if (res.status === 409) {
-      alert(`⚠ ${data.message}`); // duplicate pending request
+      alert(`⚠ ${data.message}`); 
     } else {
       alert(`❌ ${data.message || "Submission failed. Please try again."}`);
     }
@@ -295,7 +302,7 @@ async function submitDeletion() {
 }
 
 
-// ── Results Panel Logic (dummy data, no backend yet) ─────────────────────
+// ── Results Panel Logic ──────────────────────────────────────────────────
 
 function openResults() {
   document.getElementById("resultsPanel").style.display = "block";
