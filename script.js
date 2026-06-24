@@ -12,7 +12,10 @@ const BACKEND_URL = "/api";
 // ============================================================
 // 1.  GOOGLE IDENTITY SERVICES & INITIALIZATION
 // ============================================================
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
+  // Check auth first (route guarding)
+  await checkAuth();
+
   // Load our custom CAPTCHA as soon as the page loads
   loadCustomCaptcha();
 
@@ -54,13 +57,10 @@ async function handleGoogleCredentialResponse(credentialResponse) {
     const data = await res.json();
 
     if (res.ok && data.token) {
-      sessionStorage.setItem("token", data.token);
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("jwtToken", data.token);
-      sessionStorage.setItem("isLoggedIn", "true");
+      saveToken(data.token);
       if (data.name) sessionStorage.setItem("userName", data.name);
       showToast("Google login successful!", "success");
-      setTimeout(() => (window.location.href = "heroSection.html"), 800);
+      setTimeout(() => (window.location.href = "partySelection.html"), 800);
     } else {
       showToast(data.message || "Google login failed. Please try again.", "error");
     }
@@ -265,10 +265,8 @@ if (loginForm) {
       const data = await response.json();
 
       if (response.ok && data.token) {
-        // Save to localStorage so all application views can access it securely
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("jwtToken", data.token);
-        localStorage.setItem("isLoggedIn", "true");
+        // Save token to memory instead of localStorage
+        saveToken(data.token);
         localStorage.setItem("adminEmail", email); // Helpful for the dashboard sidebar profile layout
         localStorage.setItem("userRole", data.role || "USER");
 
@@ -278,7 +276,7 @@ if (loginForm) {
         if (data.role === "ADMIN") {
           setTimeout(() => (window.location.href = "admin-dashboard.html"), 800);
         } else {
-          setTimeout(() => (window.location.href = "heroSection.html"), 800);
+          setTimeout(() => (window.location.href = "partySelection.html"), 800);
         }
       } else {
         const msg = data.message || "Invalid email, password, or CAPTCHA.";

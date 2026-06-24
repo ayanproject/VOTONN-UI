@@ -1,5 +1,11 @@
 const BACKEND_URL = "/api";
 
+window.addEventListener("load", async () => {
+  if (typeof checkAuth === "function") {
+    await checkAuth();
+  }
+});
+
 const PASSWORD_RULES = [
   {
     id: "rule-length",

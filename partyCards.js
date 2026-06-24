@@ -13,7 +13,7 @@ const partyName = params.get("party");
 // ------------------ LOAD PARTY DETAILS -----------------------
 async function loadPartyDetails() {
   try {
-    const response = await fetch(`/api/party?partyName=${partyName}`);
+    const response = await apiFetch(`/api/party?partyName=${partyName}`);
     if (response.ok) {
       const party = await response.json();
       const html = `
@@ -60,18 +60,12 @@ async function handleVoteProcess() {
     return;
   }
 
-  // 2. Get auth headers
-  const authHeaders = createAuthHeaders();
-  authHeaders.append("Content-Type", "application/json");
-
   try {
-    const sendOtpRes = await fetch("/api/voters/verify", {
+    const sendOtpRes = await apiFetch("/api/voters/verify", {
       method: "POST",
-      headers: authHeaders, // 3. Add auth headers
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ voterId, email, name }),
     });
-
-    handleAuthError(sendOtpRes); // 4. Handle auth errors
 
     if (sendOtpRes.ok) {
       alert("OTP has been sent to your registered email.");
@@ -97,28 +91,21 @@ async function verifyOtpBeforeSubmit() {
     return;
   }
   
-  const authHeaders = createAuthHeaders();
-  authHeaders.append("Content-Type", "application/json");
-
   try {
-    const verifyRes = await fetch("/api/voters/verify-otp", {
+    const verifyRes = await apiFetch("/api/voters/verify-otp", {
       method: "POST",
-      headers: authHeaders, // Add auth headers
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp, voterId, name }),
     });
-
-    handleAuthError(verifyRes);
 
     if (verifyRes.ok) {
       alert("OTP verified successfully! Submitting your vote...");
 
-      const voteRes = await fetch("/api/voter/submit-vote", {
+      const voteRes = await apiFetch("/api/voter/submit-vote", {
         method: "POST",
-        headers: authHeaders, // Add auth headers
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ voterId, partyName, email }),
       });
-
-      handleAuthError(voteRes);
 
       if (voteRes.ok) {
         const msg = await voteRes.text();

@@ -47,12 +47,8 @@ registrationForm.addEventListener("submit", async (e) => {
     return;
   }
   
-  // 2. Get the auth headers
-  const authHeaders = createAuthHeaders();
-  if (!authHeaders.has("Authorization")) {
-      logout(); // Failsafe, though checkAuth() should have caught this
-      return;
-  }
+  // 2. Auth headers are now automatically managed by apiFetch
+
 
   const voter = {
     name: document.getElementById("name").value,
@@ -72,16 +68,11 @@ registrationForm.addEventListener("submit", async (e) => {
   formData.append("faceImage", capturedBlob, "face.jpg");
 
   try {
-    const res = await fetch("/api/voters/register-with-face", {
+    const res = await apiFetch("/api/voters/register-with-face", {
       method: "POST",
-      // 3. Add the Authorization header
       // DO NOT set Content-Type, browser does it for FormData
-      headers: authHeaders, 
       body: formData,
     });
-
-    // 4. Handle auth errors
-    handleAuthError(res); 
 
     if (res.ok) {
       const data = await res.json();

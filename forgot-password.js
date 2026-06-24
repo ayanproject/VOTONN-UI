@@ -1,6 +1,12 @@
 // Base URL for your Spring Boot Backend
 const API_BASE_URL = '/api/forgot-password';
 
+document.addEventListener("DOMContentLoaded", async () => {
+    if (typeof checkAuth === "function") {
+        await checkAuth();
+    }
+});
+
 // State to hold the user's email across steps
 let userEmail = '';
 

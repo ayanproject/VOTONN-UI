@@ -15,12 +15,10 @@ let state = {
 let currentReqId = '';
 
 // ── Lifecycle Initialization ──────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-        alert("🔒 Unauthorized access profile. Re-routing to entry verification.");
-        window.location.href = "index.html";
-        return;
+document.addEventListener("DOMContentLoaded", async () => {
+    // Rely on auth.js for authentication checks
+    if (typeof checkAuth === "function") {
+        await checkAuth();
     }
 
     // Set active admin profile email if saved during auth step
@@ -46,9 +44,7 @@ async function refreshDashboardData() {
 
 async function fetchPendingDeletions() {
     try {
-        const res = await fetch(`${API_BASE}/deletion/pending`, {
-            headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-        });
+        const res = await apiFetch(`${API_BASE}/deletion/pending`);
         if (res.ok) {
             state.deletions = await res.json();
             renderDeletionTable(state.deletions);
@@ -60,9 +56,7 @@ async function fetchPendingDeletions() {
 
 async function fetchPendingCorrections() {
     try {
-        const res = await fetch(`${API_BASE}/correction/pending`, {
-            headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-        });
+        const res = await apiFetch(`${API_BASE}/correction/pending`);
         if (res.ok) {
             state.corrections = await res.json();
             renderCorrectionTable(state.corrections);
@@ -74,9 +68,7 @@ async function fetchPendingCorrections() {
 
 async function fetchVoterRegistry() {
     try {
-        const res = await fetch(`${API_BASE}/voters`, {
-            headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-        });
+        const res = await apiFetch(`${API_BASE}/voters`);
         if (res.ok) {
             state.voters = await res.json();
             renderVoterTable(state.voters);
@@ -264,11 +256,10 @@ async function submitResolutionToBackend(id, action, type) {
     const targetRoute = type === 'del' ? 'deletion' : 'correction';
     const backendAction = action === 'approve' ? 'APPROVED' : (action === 'reject' ? 'REJECTED' : action.toUpperCase());
     try {
-        const response = await fetch(`${API_BASE}/${targetRoute}/${id}/resolve`, {
+        const response = await apiFetch(`${API_BASE}/${targetRoute}/${id}/resolve`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({ action: backendAction })
         });
@@ -318,10 +309,9 @@ function toast(msg, type = 'info') {
     setTimeout(() => t.remove(), 4000);
 }
 
-function logout() {
+function adminLogout() {
     if (confirm('Terminate secure command workspace application lifecycle session?')) {
-        localStorage.clear();
-        window.location.href = 'index.html';
+        logout(); // Uses auth.js logout
     }
 }
 
@@ -331,9 +321,7 @@ async function fetchAdminList() {
     const tbody = document.querySelector('#adminTable tbody');
     tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted)">Loading…</td></tr>`;
     try {
-        const res = await fetch(`${API_BASE}/admin/list`, {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
+        const res = await apiFetch(`${API_BASE}/admin/list`);
         if (res.ok) {
             const admins = await res.json();
             if (admins.length === 0) {
@@ -368,11 +356,10 @@ async function promoteUser() {
     if (!email) { toast('❌ Please enter an email address.', 'error'); return; }
 
     try {
-        const res = await fetch(`${API_BASE}/admin/promote`, {
+        const res = await apiFetch(`${API_BASE}/admin/promote`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ email })
         });
@@ -393,11 +380,10 @@ async function demoteAdmin(email) {
     if (!confirm(`Remove admin access for ${email}? They will become a normal user.`)) return;
 
     try {
-        const res = await fetch(`${API_BASE}/admin/demote`, {
+        const res = await apiFetch(`${API_BASE}/admin/demote`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ email })
         });
@@ -427,11 +413,10 @@ async function createNewAdmin() {
     }
 
     try {
-        const res = await fetch(`${API_BASE}/admin/create`, {
+        const res = await apiFetch(`${API_BASE}/admin/create`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ name, age: parseInt(age) || 0, email, phone, gender, password })
         });

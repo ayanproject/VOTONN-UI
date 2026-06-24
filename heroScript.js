@@ -6,6 +6,13 @@
 
 const API_BASE = "/api"; // adjust port if different
 
+// 1. Check for authentication as soon as the page loads
+document.addEventListener("DOMContentLoaded", async () => {
+  if (typeof checkAuth === "function") {
+    await checkAuth();
+  }
+});
+
 // ── Camera Logic (unchanged from your original) ───────────────────────────
 
 let mediaStream = null;
@@ -212,7 +219,7 @@ async function submitCorrection() {
   formData.append("document",         docFile);
 
   try {
-    const res  = await fetch(`${API_BASE}/correction/submit`, { method: "POST", body: formData });
+    const res  = await apiFetch(`${API_BASE}/correction/submit`, { method: "POST", body: formData });
     const data = await res.json();
 
     if (res.ok) {
@@ -268,7 +275,7 @@ async function submitDeletion() {
   formData.append("death_certificate", certFile);
 
   try {
-    const res  = await fetch(`${API_BASE}/deletion/submit`, { method: "POST", body: formData });
+    const res  = await apiFetch(`${API_BASE}/deletion/submit`, { method: "POST", body: formData });
     const data = await res.json();
 
     if (res.ok) {

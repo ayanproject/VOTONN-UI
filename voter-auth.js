@@ -43,13 +43,11 @@ document.getElementById("capture-face").addEventListener("click", async () => {
   authHeaders.append("Content-Type", "application/json");
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/voter/verify-face`, {
+    const response = await apiFetch(`${API_BASE_URL}/api/voter/verify-face`, {
       method: "POST",
-      headers: authHeaders, // 3. Add auth headers
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ image: imageData }),
     });
-
-    handleAuthError(response); // 4. Handle auth errors
     const result = await response.text();
     message.textContent = result;
 
@@ -74,13 +72,11 @@ voterForm.addEventListener("submit", async (e) => {
   authHeaders.append("Content-Type", "application/json");
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/voter/verify`, {
+    const response = await apiFetch(`${API_BASE_URL}/api/voter/verify`, {
       method: "POST",
-      headers: authHeaders, // Add auth headers
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ voterId, email, phone }),
     });
-
-    handleAuthError(response);
     const result = await response.text();
     message.textContent = result;
 
@@ -102,13 +98,11 @@ document.getElementById("verify-otp").addEventListener("click", async () => {
   authHeaders.append("Content-Type", "application/json");
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/voter/verify-otp`, {
+    const response = await apiFetch(`${API_BASE_URL}/api/voter/verify-otp`, {
       method: "POST",
-      headers: authHeaders, // Add auth headers
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ voterId: voterData.voterId, otp }),
     });
-
-    handleAuthError(response);
     const result = await response.text();
     message.textContent = result;
 
