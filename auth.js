@@ -3,7 +3,13 @@
 // == This file manages your JWT token securely in memory.
 // == Include it on ALL your pages.
 // =================================================================
-const API_BASE_URL = "http://localhost:8080"; // Set to your backend URL
+// Automatically detect environment: use local port 8080 if running on localhost/127.0.0.1 or from file system,
+// otherwise use empty string so that Netlify routes go through netlify.toml proxy redirects.
+const API_BASE_URL = window.location.hostname === "localhost" || 
+                     window.location.hostname === "127.0.0.1" || 
+                     window.location.protocol === "file:"
+  ? "http://localhost:8080"
+  : "";
 
 const LOGIN_PAGE = "index.html";
 const REGISTRATION_PAGE = "registration.html";
@@ -123,7 +129,11 @@ async function apiFetch(url, options = {}) {
     }
   }
 
-  let response = await fetch(url, options);
+  const targetUrl = url.startsWith("http://") || url.startsWith("https://")
+    ? url
+    : `${API_BASE_URL}${url}`;
+
+  let response = await fetch(targetUrl, options);
 
   // If 401 Unauthorized, try to refresh the token and retry once
   if (response.status === 401) {
@@ -138,7 +148,7 @@ async function apiFetch(url, options = {}) {
         options.headers['Authorization'] = `Bearer ${newToken}`;
       }
       // Retry original request
-      response = await fetch(url, options);
+      response = await fetch(targetUrl, options);
     } else {
       logout(); // Refresh failed, log out
     }
