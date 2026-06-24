@@ -6,7 +6,7 @@
 
 // ── REPLACE THESE WITH YOUR REAL KEYS ──────────────────────
 const GOOGLE_CLIENT_ID = "1024481193894-rb7hqih2vc62nvpsurrq9c56fok1tter.apps.googleusercontent.com";
-const BACKEND_URL = "/api";
+// We now use API_BASE_URL defined in auth.js instead of a local BACKEND_URL
 // ────────────────────────────────────────────────────────────
 
 // ============================================================
@@ -49,7 +49,7 @@ window.addEventListener("load", async () => {
 // ============================================================
 async function handleGoogleCredentialResponse(credentialResponse) {
   try {
-    const res = await fetch(`${BACKEND_URL}/auth/google`, {
+    const res = await fetch(`${API_BASE_URL}/api/auth/google`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ credential: credentialResponse.credential }),
@@ -77,7 +77,7 @@ let currentCaptchaSessionId = null;
 
 async function loadCustomCaptcha() {
   try {
-    const res = await fetch(`${BACKEND_URL}/captcha`);
+    const res = await fetch(`${API_BASE_URL}/api/captcha`);
     const data = await res.json();
 
     // Expecting backend to return { imageBase64: "...", sessionId: "..." }
@@ -252,7 +252,7 @@ if (loginForm) {
 
     setButtonLoading(loginBtn, true, "Signing in…");
     try {
-      const response = await fetch(`${BACKEND_URL}/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

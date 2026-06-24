@@ -1,5 +1,5 @@
 // Base URL for your Spring Boot Backend
-const API_BASE_URL = '/api/forgot-password';
+const FORGOT_PWD_URL = `${API_BASE_URL}/api/forgot-password`;
 
 document.addEventListener("DOMContentLoaded", async () => {
     if (typeof checkAuth === "function") {
@@ -21,7 +21,7 @@ async function handleSendOtp(event) {
     btnText.innerText = "Sending...";
 
     try {
-        const response = await fetch(`${API_BASE_URL}/send-otp`, {
+        const response = await fetch(`${FORGOT_PWD_URL}/send-otp`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: emailInput })
@@ -59,7 +59,7 @@ async function handleVerifyOtp(event) {
 
     try {
         // Make call to Spring Boot
-        const response = await fetch(`${API_BASE_URL}/verify-otp`, {
+        const response = await fetch(`${FORGOT_PWD_URL}/verify-otp`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: userEmail, otp: otpInput })
@@ -100,7 +100,7 @@ async function handleResetPassword(event) {
 
     try {
         // Make call to Spring Boot
-        const response = await fetch(`${API_BASE_URL}/reset`, {
+        const response = await fetch(`${FORGOT_PWD_URL}/reset`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: userEmail, newPassword: newPassword })

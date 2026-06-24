@@ -5,7 +5,7 @@
 // =================================================================
 const API_BASE_URL = "http://localhost:8080"; // Set to your backend URL
 
-const LOGIN_PAGE = "index.html"; 
+const LOGIN_PAGE = "index.html";
 const REGISTRATION_PAGE = "registration.html";
 const DEFAULT_AUTHED_PAGE = "partySelection.html";
 
@@ -109,11 +109,11 @@ function createAuthHeaders() {
 async function apiFetch(url, options = {}) {
   // Ensure credentials are included so cookies are sent (important for refresh)
   options.credentials = 'include';
-  
+
   if (!options.headers) {
     options.headers = new Headers();
   }
-  
+
   const token = getToken();
   if (token) {
     if (options.headers instanceof Headers) {
@@ -129,7 +129,7 @@ async function apiFetch(url, options = {}) {
   if (response.status === 401) {
     console.warn("401 Unauthorized. Attempting to refresh token...");
     const refreshed = await silentRefresh();
-    
+
     if (refreshed) {
       const newToken = getToken();
       if (options.headers instanceof Headers) {
