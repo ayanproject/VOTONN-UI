@@ -1,6 +1,6 @@
 [[redirects]]
   from = "/api/*"
-  to = "http://3.107.237.223:8080/api/:splat"
+  to = "http://3.107.237.223:8080/:splat"  # <-- Removed /api/ from here
   status = 200
   force = true
 
