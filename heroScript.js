@@ -137,7 +137,7 @@ async function proceedToVote() {
     formData.append("secret_pin",  secretPin);
     formData.append("probe_image", blob, "face.jpg");
 
-    const res    = await fetch("/verify", { method: "POST", body: formData });
+    const res    = await fetch("https://face-verification-service-latest.onrender.com/verify", { method: "POST", body: formData });
     const result = await res.json();
 
     if (result.verified === true) {
