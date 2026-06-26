@@ -12,7 +12,8 @@ const API_BASE_URL = window.location.hostname === "localhost" ||
   : "";
 
 const LOGIN_PAGE = "index.html";
-const REGISTRATION_PAGE = "registration.html";
+const SIGNUP_PAGE = "signupIndex.html";
+const FORGOT_PASSWORD_PAGE = "forgot-password.html";
 const DEFAULT_AUTHED_PAGE = "heroSection.html";
 
 // IN-MEMORY TOKEN STORAGE (Protects against XSS)
@@ -72,7 +73,9 @@ async function logout() {
 async function checkAuth() {
   let token = getToken();
   const currentPage = window.location.pathname.split("/").pop() || "index.html";
-  const isAuthPage = currentPage === LOGIN_PAGE || currentPage === REGISTRATION_PAGE || currentPage === "signupIndex.html";
+  const isAuthPage = currentPage === LOGIN_PAGE || 
+                     currentPage === SIGNUP_PAGE || 
+                     currentPage === FORGOT_PASSWORD_PAGE;
 
   // If no token in memory, try to refresh
   if (!token) {
