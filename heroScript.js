@@ -155,7 +155,7 @@ async function proceedToVote() {
       localStorage.setItem("expiryTime", Date.now() + 10 * 60 * 1000);
       window.location.href = "PartySelection.html";
     } else {
-      alert("❌ Face Not Matched. Try Again!");
+      alert("❌ Verification Failed: " + (result.reason || "Face Not Matched. Try Again!"));
     }
   } catch (e) {
     console.error(e);
