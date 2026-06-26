@@ -1,10 +1,19 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const expiryTime = localStorage.getItem("expiryTime");
+// =================================================================
+// == partyCards.js (UPDATED)
+// == Assumes auth.js is included in the HTML
+// =================================================================
 
-  if (!expiryTime || Date.now() > parseInt(expiryTime)) {
-    alert("Session expired. Please login again.");
-    localStorage.clear();
-    window.location.href = "index.html";
+// 1. Check for authentication and active verification session as soon as the page loads
+document.addEventListener("DOMContentLoaded", async () => {
+  if (typeof checkAuth === "function") {
+    await checkAuth();
+  }
+  // Verify face validation session is active
+  const expiryTime = localStorage.getItem("expiryTime");
+  const voterId = localStorage.getItem("voterId");
+  if (!expiryTime || Date.now() > parseInt(expiryTime) || !voterId) {
+    alert("Verification session expired or inactive. Please verify your face first.");
+    window.location.href = "heroSection.html";
   }
 });
 
@@ -14,7 +23,7 @@ const partyName = params.get("party");
 // ------------------ LOAD PARTY DETAILS -----------------------
 async function loadPartyDetails() {
   try {
-    const response = await fetch(`https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/party?partyName=${partyName}`);
+    const response = await apiFetch(`/api/party?partyName=${partyName}`);
     if (response.ok) {
       const party = await response.json();
       const html = `
@@ -23,10 +32,10 @@ async function loadPartyDetails() {
             <img src="partySelection/${party.leaderUrl}" alt="${party.leader}" class="leader-image">
           </div>
           <div class="party-section">
-            <img src="partySelection/${party.leaderUrl}" alt="${party.partyName}" class="party-image">
+            <img src="partySelection/${party.partyUrl}" alt="${party.partyName}" class="party-image">
             <div class="party-name">${party.partyName}</div>
           </div>
-        . <div class="info-section">
+          <div class="info-section">
             <div><strong>Leader:</strong> ${party.leader}</div>
             <div><strong>Description:</strong> ${party.description}</div>
             <div><strong>Mission:</strong> ${party.mission}</div>
@@ -57,12 +66,12 @@ async function handleVoteProcess() {
 
   if (!voterId || !email) {
     alert("Session error: Missing voter ID or email. Please log in again.");
-    window.location.href = "index.html";
+    window.location.href = LOGIN_PAGE;
     return;
   }
 
   try {
-    const sendOtpRes = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voters/verify", {
+    const sendOtpRes = await apiFetch("/api/voters/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ voterId, email, name }),
@@ -91,9 +100,9 @@ async function verifyOtpBeforeSubmit() {
     alert("Please enter OTP.");
     return;
   }
-
+  
   try {
-    const verifyRes = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voters/verify-otp", {
+    const verifyRes = await apiFetch("/api/voters/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp, voterId, name }),
@@ -102,7 +111,7 @@ async function verifyOtpBeforeSubmit() {
     if (verifyRes.ok) {
       alert("OTP verified successfully! Submitting your vote...");
 
-      const voteRes = await fetch("https://votonn-backend-eggwcgcpaueaatfy.southeastasia-01.azurewebsites.net/api/voter/submit-vote", {
+      const voteRes = await apiFetch("/api/voter/submit-vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ voterId, partyName, email }),
@@ -114,28 +123,29 @@ async function verifyOtpBeforeSubmit() {
         alert(msg);
         window.location.href = "thankyou.html";
       } else {
-  	    const err = await voteRes.text();
-  	    alert("Vote submission failed: " + err);
-  	  }
+        const err = await voteRes.text();
+        alert("Vote submission failed: " + err);
+      }
     } else {
-  	  const err = await verifyRes.text();
-  	  alert("OTP verification failed: " + err);
-  	}
+      const err = await verifyRes.text();
+      alert("OTP verification failed: " + err);
+    }
   } catch (error) {
     console.error("Error verifying OTP or submitting vote:", error);
     alert("Something went wrong. Please try again.");
   }
 }
 
-// ------------------ OTP MODAL FUNCTIONS -----------------------
+// ... (rest of your modal functions are fine) ...
 function showOtpModal() {
   document.getElementById("otpModal").style.display = "block";
   document.getElementById("otpInput").value = "";
-  document.getElementById("otpInput").focus(); // ✅ 's' has been removed
+  document.getElementById("otpInput").focus();
 }
 
 function closeOtpModal() {
   document.getElementById("otpModal").style.display = "none";
 }
 
+// Load party details when the page loads
 window.onload = loadPartyDetails;

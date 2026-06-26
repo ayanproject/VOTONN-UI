@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — VOTONN</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="signup.css" />
+</head>
+
+<body>
+
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow--right"></div>
+
+  <div class="page-wrap page-wrap--signup">
+
+    <!-- Left Panel -->
+    <div class="brand-panel">
+
+      <div class="brand-top">
+        <span class="logo-mark">V</span>
+        <span class="logo-text">OTONN</span>
+      </div>
+
+      <div class="brand-body">
+        <h1 class="brand-headline">
+          Join<br />
+          The<br />
+          Demo-<br />
+          cracy.
+        </h1>
+
+        <p class="brand-sub">
+          Register once. Vote with confidence.<br />
+          Your identity is protected.
+        </p>
+      </div>
+
+      <div class="brand-bottom">
+        <div class="stat">
+          <span class="stat-num">256-bit</span>
+          <span class="stat-label">Encryption</span>
+        </div>
+
+        <div class="stat-divider"></div>
+
+        <div class="stat">
+          <span class="stat-num">Free</span>
+          <span class="stat-label">Forever</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Panel -->
+    <div class="form-panel">
+
+      <div class="form-card form-card--wide">
+
+        <div class="form-header">
+          <h2 class="form-title">Create account</h2>
+          <p class="form-sub">Fill in your details to get started</p>
+        </div>
+
+        <form id="signupForm">
+
+          <!-- Name + Age -->
+          <div class="field-row">
+
+            <div class="field-group">
+              <label class="field-label">Full name</label>
+
+              <div class="field-wrap">
+                <input
+                  type="text"
+                  id="name"
+                  class="field-input"
+                  placeholder="Enter your Name"
+                />
+              </div>
+
+              <span class="field-error" id="nameError"></span>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Age</label>
+
+              <div class="field-wrap">
+                <input
+                  type="number"
+                  id="age"
+                  class="field-input"
+                  /* placeholder="25" */
+                />
+              </div>
+
+              <span class="field-error" id="ageError"></span>
+            </div>
+
+          </div>
+
+          <!-- Email + Phone -->
+          <div class="field-row">
+
+            <div class="field-group">
+              <label class="field-label">Email</label>
+
+              <div class="field-wrap">
+                <input
+                  type="email"
+                  id="email"
+                  class="field-input"
+                  placeholder="Enter your eamil"
+                />
+              </div>
+
+              <span class="field-error" id="emailError"></span>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Phone</label>
+
+              <div class="field-wrap">
+                <input
+                  type="tel"
+                  id="phone"
+                  class="field-input"
+                  /* placeholder="+91 98765 43210" */
+                />
+              </div>
+
+              <span class="field-error" id="phoneError"></span>
+            </div>
+
+          </div>
+
+          <!-- Gender -->
+          <div class="field-row">
+
+            <div class="field-group">
+              <label class="field-label">Gender</label>
+
+              <div class="field-wrap field-wrap--select">
+
+                <select id="gender" class="field-input field-select">
+                  <option value="" selected disabled>Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+
+              </div>
+
+              <span class="field-error" id="genderError"></span>
+            </div>
+
+          </div>
+
+          <!-- Password -->
+          <div class="field-group">
+
+            <label class="field-label">Password</label>
+
+            <div class="field-wrap">
+
+              <input
+                type="password"
+                id="password"
+                class="field-input"
+                placeholder="Create a strong password"
+              />
+
+              <button
+                type="button"
+                class="eye-btn"
+                id="toggleSignupPassword"
+              >
+                👁
+              </button>
+
+            </div>
+
+            <!-- Strength -->
+            <div class="strength-wrap">
+
+              <div class="strength-bar">
+                <div
+                  class="strength-fill"
+                  id="signupStrengthFill"
+                ></div>
+              </div>
+
+              <span
+                class="strength-label"
+                id="signupStrengthLabel"
+              ></span>
+
+            </div>
+
+            <!-- Rules -->
+            <ul class="rules-list">
+
+              <li class="rule" id="rule-length">
+                <span class="rule-dot"></span>
+                At least 8 characters
+              </li>
+
+              <li class="rule" id="rule-upper">
+                <span class="rule-dot"></span>
+                One uppercase letter
+              </li>
+
+              <li class="rule" id="rule-lower">
+                <span class="rule-dot"></span>
+                One lowercase letter
+              </li>
+
+              <li class="rule" id="rule-number">
+                <span class="rule-dot"></span>
+                One number
+              </li>
+
+              <li class="rule" id="rule-special">
+                <span class="rule-dot"></span>
+                One special character
+              </li>
+
+            </ul>
+
+            <span class="field-error" id="passwordError"></span>
+
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="submit-btn" id="signupBtn">
+            <span class="btn-text">Create Account</span>
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="signup-script.js"></script>
+
+</body>
+</html>

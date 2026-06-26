@@ -86,7 +86,21 @@
 
   <button class="btn" onclick="handleNext()">Next</button>
 
+  <script src="auth.js"></script>
   <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (typeof checkAuth === "function") {
+        await checkAuth();
+      }
+      // Check face verification validity
+      const expiryTime = localStorage.getItem("expiryTime");
+      const voterId = localStorage.getItem("voterId");
+      if (!expiryTime || Date.now() > parseInt(expiryTime) || !voterId) {
+        alert("Verification session expired or inactive. Please verify your face first.");
+        window.location.href = "heroSection.html";
+      }
+    });
+
     const partyData = [
   { name: "BJP", img: "partySelection/bjp.jpg" },
   { name: "TMC", img: "partySelection/tmc.jpg" },

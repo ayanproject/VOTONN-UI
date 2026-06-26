@@ -4,18 +4,38 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VOTONN - Online Voting Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="heroStyle.css"/>
 </head>
 <body>
+
+  <!-- Animated background grid -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
   <header>
-    <h1>Welcome to VOTONN</h1>
-    <p>India's most secure online voting platform. Exercise your democratic right with confidence and transparency.</p>
-    <div class="features">🔒 Bank-Grade Security &nbsp; | &nbsp; 👤 Biometric Verification &nbsp; | &nbsp; 🏛 Government Certified</div>
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-mark">▲</span>
+        <span class="logo-text">VOTONN</span>
+      </div>
+      <p class="tagline">India's most secure online voting platform.<br>Exercise your democratic right with confidence and transparency.</p>
+      <div class="badges">
+        <span class="badge">🔒 Bank-Grade Security</span>
+        <span class="badge">👤 Biometric Verification</span>
+        <span class="badge">🏛 Government Certified</span>
+      </div>
+    </div>
   </header>
 
-  <div class="container">
-    <!-- Registration -->
-    <div class="card">
+  <main class="container">
+
+    <!-- ── Card 1: Registration ── -->
+    <div class="card card--primary" data-index="1">
+      <div class="card-accent"></div>
+      <div class="card-icon">🪪</div>
       <h2>New Voter Registration</h2>
       <ul>
         <li>🪪 Voter ID Card Required</li>
@@ -23,11 +43,13 @@
         <li>📧 Email Verification</li>
         <li>🔑 4-Digit Security PIN</li>
       </ul>
-      <button onclick="window.location.href='registration.html'">Start Registration</button>
+      <button class="btn btn--solid" onclick="startRegistration()">Start Registration</button>
     </div>
 
-    <!-- Voting -->
-    <div class="card">
+    <!-- ── Card 2: Vote ── -->
+    <div class="card card--primary" data-index="2">
+      <div class="card-accent"></div>
+      <div class="card-icon">🗳</div>
       <h2>Continue to Vote</h2>
       <ul>
         <li>🔑 4-Digit PIN Authentication</li>
@@ -36,7 +58,6 @@
         <li>🗳 Secure Vote Submission</li>
       </ul>
 
-      <!-- Hidden form (revealed on click) -->
       <form id="voteForm" style="display:none" onsubmit="event.preventDefault(); proceedToVote();">
         <input type="text" id="voterId" placeholder="Enter Voter ID" required />
         <input type="password" id="secretPin" placeholder="Enter Secret PIN" required />
@@ -45,29 +66,163 @@
           <div class="video-area">
             <video id="camera" autoplay playsinline muted></video>
             <canvas id="snapshot" style="display:none"></canvas>
+            <div class="cam-overlay" id="camOverlay">
+              <span>📷 Camera Off</span>
+            </div>
           </div>
           <div class="cam-actions">
-            <button type="button" id="startCamBtn" onclick="startCamera()">Start Camera</button>
-            <button type="button" id="captureBtn" onclick="captureFrame()" disabled>Capture</button>
-            <button type="button" id="retakeBtn" onclick="retake()" style="display:none">Retake</button>
-            <button type="button" id="stopCamBtn" onclick="stopCamera()" disabled>Stop Camera</button>
+            <button type="button" class="btn btn--sm" id="startCamBtn" onclick="startCamera()">▶ Start</button>
+            <button type="button" class="btn btn--sm btn--green" id="captureBtn" onclick="captureFrame()" disabled>⊙ Capture</button>
+            <button type="button" class="btn btn--sm btn--warn" id="retakeBtn" onclick="retake()" style="display:none">↺ Retake</button>
+            <button type="button" class="btn btn--sm btn--red" id="stopCamBtn" onclick="stopCamera()" disabled>■ Stop</button>
           </div>
-          <small class="hint">
-            Tip: Use HTTPS or <code>http://localhost</code> to enable camera access in browsers.
-          </small>
+          <small class="hint">Use HTTPS or <code>localhost</code> to enable camera access.</small>
         </div>
 
-        <button type="submit" class="btn">Verify & Proceed</button>
+        <button type="submit" class="btn btn--solid btn--full">Verify &amp; Proceed →</button>
       </form>
 
-      <button id="proceedBtn" onclick="showVoteForm()">Proceed to Vote</button>
+      <button id="proceedBtn" class="btn btn--solid" onclick="showVoteForm()">Proceed to Vote</button>
     </div>
-  </div>
+
+    <!-- ── Card 3: Correction ── -->
+    <div class="card card--secondary" data-index="3">
+      <div class="card-accent card-accent--orange"></div>
+      <div class="card-icon">✏️</div>
+      <h2>Correct Voter Data</h2>
+      <p class="card-desc">Update incorrect information on your voter record. Supporting documents required.</p>
+
+      <div id="correctionPanel" style="display:none">
+
+        <!-- Step 1: Choose field -->
+        <div id="corrStep1">
+          <p class="step-label">Select the field to correct:</p>
+          <div class="pill-group" id="corrFieldPills">
+            <button type="button" class="pill" onclick="selectCorrField('name')">Full Name</button>
+            <button type="button" class="pill" onclick="selectCorrField('father')">Father's Name</button>
+            <button type="button" class="pill" onclick="selectCorrField('dob')">Date of Birth</button>
+            <button type="button" class="pill" onclick="selectCorrField('email')">Email</button>
+            <button type="button" class="pill" onclick="selectCorrField('pin')">Security PIN</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Correction form (injected dynamically) -->
+        <div id="corrStep2" style="display:none">
+          <button type="button" class="btn btn--ghost btn--sm" onclick="backToCorrStep1()">← Back</button>
+          <form id="correctionForm" onsubmit="event.preventDefault(); submitCorrection();">
+            <div id="corrFormFields"></div>
+            <label class="file-label">
+              📎 Supporting Document
+              <input type="file" id="corrDoc" accept=".pdf,.jpg,.jpeg,.png" required />
+            </label>
+            <button type="submit" class="btn btn--orange btn--full">Submit Correction Request</button>
+          </form>
+        </div>
+      </div>
+
+      <button class="btn btn--outline-orange" id="corrOpenBtn" onclick="openCorrectionPanel()">Correct My Data</button>
+    </div>
+
+    <!-- ── Card 4: Deletion ── -->
+    <div class="card card--secondary" data-index="4">
+      <div class="card-accent card-accent--red"></div>
+      <div class="card-icon">🗑️</div>
+      <h2>Voter Deletion</h2>
+      <p class="card-desc">Remove a deceased voter from the electoral roll. Death certificate mandatory.</p>
+
+      <div id="deletionPanel" style="display:none">
+        <form id="deletionForm" onsubmit="event.preventDefault(); submitDeletion();">
+          <input type="text"     id="delName"    placeholder="Full Name"       required />
+          <input type="text"     id="delFather"  placeholder="Father's Name"   required />
+          <input type="date"     id="delDob"     placeholder="Date of Birth"   required />
+          <input type="email"    id="delEmail"   placeholder="Email Address"   required />
+          <input type="password" id="delPin"     placeholder="4-Digit Security PIN" maxlength="4" required />
+          <input type="text"     id="delVoterId" placeholder="Voter ID"        required />
+          <label class="file-label">
+            📎 Death Certificate <span class="req">*</span>
+            <input type="file" id="deathCert" accept=".pdf,.jpg,.jpeg,.png" required />
+          </label>
+          <button type="submit" class="btn btn--red btn--full">Submit Deletion Request</button>
+        </form>
+      </div>
+
+      <button class="btn btn--outline-red" id="delOpenBtn" onclick="openDeletionPanel()">Request Deletion</button>
+    </div>
+
+    <!-- ── Card 5: Results ── -->
+    <div class="card card--results" data-index="5">
+      <div class="card-accent card-accent--gold"></div>
+      <div class="card-icon">📊</div>
+      <h2>Election Results</h2>
+      <p class="card-desc">Live tally of votes cast in the current election cycle.</p>
+
+      <div id="resultsPanel" style="display:none">
+        <div class="results-loading" id="resultsLoading">
+          <div class="spinner"></div>
+          <p>Fetching live results…</p>
+        </div>
+        <div id="resultsList" style="display:none">
+          <div class="result-bar-wrap">
+            <span class="party-name">🌷 Bharat Janata Party</span>
+            <div class="bar-track"><div class="bar-fill" style="--pct:62%; --clr:#ff6600;"></div></div>
+            <span class="vote-count">2,41,875 votes</span>
+          </div>
+          <div class="result-bar-wrap">
+            <span class="party-name">✋ Indian National Congress</span>
+            <div class="bar-track"><div class="bar-fill" style="--pct:28%; --clr:#00a0dc;"></div></div>
+            <span class="vote-count">1,09,312 votes</span>
+          </div>
+          <div class="result-bar-wrap">
+            <span class="party-name">🌾 All India Trinamool Congress</span>
+            <div class="bar-track"><div class="bar-fill" style="--pct:7%; --clr:#20b2aa;"></div></div>
+            <span class="vote-count">27,450 votes</span>
+          </div>
+          <div class="result-bar-wrap">
+            <span class="party-name">🔷 Others</span>
+            <div class="bar-track"><div class="bar-fill" style="--pct:3%; --clr:#aaa;"></div></div>
+            <span class="vote-count">11,200 votes</span>
+          </div>
+          <p class="results-note">* Dummy data for demonstration. Official results pending.</p>
+        </div>
+      </div>
+
+      <button class="btn btn--gold" id="resultsBtn" onclick="openResults()">View Results</button>
+    </div>
+
+  </main>
 
   <footer>
-    <p>© 2025 VOTONN. All rights reserved. Certified by Election Commission of India.</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="logo-mark">▲</span> VOTONN
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Contact Us</h4>
+          <p>📞 <a href="tel:8145795379">8145795379</a></p>
+          <p>✉️ <a href="mailto:papaim294@gmail.com">papaim294@gmail.com</a></p>
+          <p>📍 Kolkata, West Bengal, India</p>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <p>Privacy Policy</p>
+          <p>Terms of Service</p>
+          <p>Help Center</p>
+        </div>
+        <div class="footer-col">
+          <h4>Certified By</h4>
+          <p>🏛 Election Commission of India</p>
+          <p>🔐 Cyber Security Division</p>
+          <p>🇮🇳 Ministry of Law &amp; Justice</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 VOTONN. All rights reserved. Certified by Election Commission of India.</p>
+      </div>
+    </div>
   </footer>
 
+  <script src="auth.js"></script>
   <script src="heroScript.js"></script>
 </body>
 </html>
