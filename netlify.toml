@@ -12,6 +12,6 @@
 
 [[redirects]]
   from = "/verify"
-  to = "https://face-verification-service-latest.onrender.com/verify"
+  to = "https://votonn-biometrics-latest.onrender.com/verify"
   status = 200
   force = true

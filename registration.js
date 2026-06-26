@@ -76,7 +76,7 @@ registrationForm.addEventListener("submit", async (e) => {
 
     if (res.ok) {
       const data = await res.json();
-      statusMsg.innerText = "✅ Registration successful for " + data.name;
+      statusMsg.innerText = "✅ Registration successful for " + data.name + ". Redirecting...";
       statusMsg.style.color = "green";
       localStorage.setItem("voterId", voter.voterId);
       localStorage.setItem("email", data.email);
@@ -84,6 +84,9 @@ registrationForm.addEventListener("submit", async (e) => {
 
       const expiry = Date.now() + 60 * 60 * 1000;
       localStorage.setItem("expiryTime", expiry);
+      setTimeout(() => {
+        window.location.href = "heroSection.html";
+      }, 1500);
     } else {
       const errText = await res.text();
       statusMsg.innerText = "❌ Registration failed: " + errText;

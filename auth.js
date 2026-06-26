@@ -13,7 +13,7 @@ const API_BASE_URL = window.location.hostname === "localhost" ||
 
 const LOGIN_PAGE = "index.html";
 const REGISTRATION_PAGE = "registration.html";
-const DEFAULT_AUTHED_PAGE = "partySelection.html";
+const DEFAULT_AUTHED_PAGE = "heroSection.html";
 
 // IN-MEMORY TOKEN STORAGE (Protects against XSS)
 let inMemoryToken = null;
@@ -92,7 +92,12 @@ async function checkAuth() {
     // Authenticated
     if (isAuthPage) {
       console.log("Already authenticated. Redirecting away from auth page.");
-      window.location.href = DEFAULT_AUTHED_PAGE;
+      const role = localStorage.getItem("userRole") || "USER";
+      if (role === "ADMIN") {
+        window.location.href = "admin-dashboard.html";
+      } else {
+        window.location.href = "heroSection.html";
+      }
     }
   }
 }

@@ -21,6 +21,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         await checkAuth();
     }
 
+    // Role verification check to prevent unauthorized dashboard access
+    const userRole = localStorage.getItem("userRole");
+    if (userRole !== "ADMIN") {
+        console.warn("Access denied. Admin privileges required.");
+        alert("Access denied. Admin privileges required.");
+        window.location.href = "index.html";
+        return;
+    }
+
     // Set active admin profile email if saved during auth step
     const savedEmail = localStorage.getItem("adminEmail");
     if (savedEmail) {

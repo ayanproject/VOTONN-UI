@@ -58,9 +58,14 @@ async function handleGoogleCredentialResponse(credentialResponse) {
 
     if (res.ok && data.token) {
       saveToken(data.token);
-      if (data.name) sessionStorage.setItem("userName", data.name);
+      localStorage.setItem("adminEmail", data.email || "");
+      localStorage.setItem("userRole", data.role || "USER");
       showToast("Google login successful!", "success");
-      setTimeout(() => (window.location.href = "partySelection.html"), 800);
+      if (data.role === "ADMIN") {
+        setTimeout(() => (window.location.href = "admin-dashboard.html"), 800);
+      } else {
+        setTimeout(() => (window.location.href = "heroSection.html"), 800);
+      }
     } else {
       showToast(data.message || "Google login failed. Please try again.", "error");
     }

@@ -3,9 +3,19 @@
 // == Assumes auth.js is included in the HTML
 // =================================================================
 
-// 1. Check for authentication as soon as the page loads
-// This replaces your old expiryTime check
-document.addEventListener("DOMContentLoaded", checkAuth);
+// 1. Check for authentication and active verification session as soon as the page loads
+document.addEventListener("DOMContentLoaded", async () => {
+  if (typeof checkAuth === "function") {
+    await checkAuth();
+  }
+  // Verify face validation session is active
+  const expiryTime = localStorage.getItem("expiryTime");
+  const voterId = localStorage.getItem("voterId");
+  if (!expiryTime || Date.now() > parseInt(expiryTime) || !voterId) {
+    alert("Verification session expired or inactive. Please verify your face first.");
+    window.location.href = "heroSection.html";
+  }
+});
 
 const params = new URLSearchParams(window.location.search);
 const partyName = params.get("party");
@@ -22,7 +32,7 @@ async function loadPartyDetails() {
             <img src="partySelection/${party.leaderUrl}" alt="${party.leader}" class="leader-image">
           </div>
           <div class="party-section">
-            <img src="partySelection/${party.leaderUrl}" alt="${party.partyName}" class="party-image">
+            <img src="partySelection/${party.partyUrl}" alt="${party.partyName}" class="party-image">
             <div class="party-name">${party.partyName}</div>
           </div>
           <div class="info-section">

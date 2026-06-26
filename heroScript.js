@@ -137,11 +137,7 @@ async function proceedToVote() {
     formData.append("secret_pin",  secretPin);
     formData.append("probe_image", blob, "face.jpg");
 
-    const verifyUrl = window.location.hostname === "localhost" || 
-                      window.location.hostname === "127.0.0.1" || 
-                      window.location.protocol === "file:"
-      ? "http://127.0.0.1:8000/verify"
-      : "/verify";
+    const verifyUrl = "https://votonn-biometrics-latest.onrender.com/verify";
 
     const res    = await fetch(verifyUrl, { method: "POST", body: formData });
     const result = await res.json();
@@ -149,6 +145,9 @@ async function proceedToVote() {
     if (result.verified === true) {
       alert("✅ Face Verified Successfully!");
       stopCamera();
+      localStorage.setItem("voterId", voterId);
+      localStorage.setItem("email", result.email || "");
+      localStorage.setItem("name", result.name || "");
       localStorage.setItem("expiryTime", Date.now() + 10 * 60 * 1000);
       window.location.href = "PartySelection.html";
     } else {
@@ -321,4 +320,9 @@ function openResults() {
     document.getElementById("resultsList").style.display    = "block";
     document.querySelectorAll(".bar-fill").forEach(b => b.classList.add("bar-fill--animate"));
   }, 2200);
+}
+
+function startRegistration() {
+  alert("Please allow camera access on the next page to proceed with your biometric registration.");
+  window.location.href = "registration.html";
 }
