@@ -137,7 +137,11 @@ async function proceedToVote() {
     formData.append("secret_pin",  secretPin);
     formData.append("probe_image", blob, "face.jpg");
 
-    const verifyUrl = "https://votonn-biometrics-latest.onrender.com/verify";
+    const verifyUrl = window.location.hostname === "localhost" || 
+                     window.location.hostname === "127.0.0.1" || 
+                     window.location.protocol === "file:"
+      ? "http://localhost:8000/verify"
+      : "/verify";
 
     const res    = await fetch(verifyUrl, { method: "POST", body: formData });
     const result = await res.json();
