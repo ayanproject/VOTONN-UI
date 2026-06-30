@@ -24,6 +24,33 @@ function showVoteForm() {
 }
 
 async function startCamera() {
+  const voterId   = document.getElementById("voterId").value.trim();
+  const secretPin = document.getElementById("secretPin").value.trim();
+
+  if (!voterId || !secretPin) {
+    alert("⚠ Please provide Voter ID and Secret PIN before starting the camera.");
+    return;
+  }
+
+  // Pre-verify credentials before starting face verification camera
+  try {
+    const checkRes = await apiFetch("/api/voters/verify-credentials", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ voterId, secretPin })
+    });
+    
+    if (!checkRes.ok) {
+      const errData = await checkRes.json();
+      alert(`❌ Verification Failed: ${errData.message || "Invalid credentials"}`);
+      return;
+    }
+  } catch (err) {
+    console.error(err);
+    alert("🚨 Error verifying credentials. Please ensure the backend is running.");
+    return;
+  }
+
   const startBtn   = document.getElementById("startCamBtn");
   const stopBtn    = document.getElementById("stopCamBtn");
   const captureBtn = document.getElementById("captureBtn");
@@ -112,8 +139,6 @@ function canvasToBlob(canvas, type = "image/jpeg", quality = 0.92) {
 }
 
 async function proceedToVote() {
-  alert("Starting Face Validation...");
-
   const voterId   = document.getElementById("voterId").value.trim();
   const secretPin = document.getElementById("secretPin").value.trim();
   const canvas    = document.getElementById("snapshot");
@@ -122,6 +147,27 @@ async function proceedToVote() {
     alert("⚠ Please provide Voter ID and Secret PIN.");
     return;
   }
+
+  // Pre-verify credentials before initiating biometric verification
+  try {
+    const checkRes = await apiFetch("/api/voters/verify-credentials", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ voterId, secretPin })
+    });
+    
+    if (!checkRes.ok) {
+      const errData = await checkRes.json();
+      alert(`❌ Verification Failed: ${errData.message || "Invalid credentials"}`);
+      return;
+    }
+  } catch (err) {
+    console.error(err);
+    alert("🚨 Error verifying credentials. Please ensure the backend is running.");
+    return;
+  }
+
+  alert("Starting Face Validation...");
 
   if (!hasSnapshot) {
     if (!mediaStream) { alert("Please start the camera first."); return; }
@@ -141,7 +187,7 @@ async function proceedToVote() {
                      window.location.hostname === "127.0.0.1" || 
                      window.location.protocol === "file:"
       ? "http://localhost:8000/verify"
-      : "/verify";
+      : "https://votonn-biometrics-latest-3.onrender.com/verify";
 
     const res    = await fetch(verifyUrl, { method: "POST", body: formData });
     const result = await res.json();
