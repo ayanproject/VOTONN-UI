@@ -33,11 +33,14 @@ window.addEventListener("load", async () => {
 
   const container = document.getElementById("googleBtnContainer");
   if (container) {
+    const cardWidth = container.offsetWidth || (window.innerWidth < 480 ? window.innerWidth - 80 : 380);
+    const btnWidth = Math.max(200, Math.min(400, cardWidth));
+
     google.accounts.id.renderButton(container, {
       theme: "filled_black",
       size: "large",
       shape: "rectangular",
-      width: 380,
+      width: btnWidth,
       logo_alignment: "left",
       text: "continue_with",
     });

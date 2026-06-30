@@ -447,6 +447,15 @@ html, body {
   .form-card { padding: 32px 28px; }
 }
 @media (max-width: 480px) {
-  .form-card { padding: 28px 20px; border-radius: 14px; }
-  .brand-headline { font-size: 2.8rem; }
+  .brand-panel {
+    padding: 24px 16px;
+  }
+  .brand-headline { font-size: 2.6rem; }
+  .form-panel {
+    padding: 16px 8px;
+  }
+  .form-card { 
+    padding: 24px 16px; 
+    border-radius: 14px; 
+  }
 }
