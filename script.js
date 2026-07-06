@@ -55,6 +55,7 @@ async function handleGoogleCredentialResponse(credentialResponse) {
     const res = await fetch(`${API_BASE_URL}/api/auth/google`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ credential: credentialResponse.credential }),
     });
     const data = await res.json();
@@ -263,6 +264,7 @@ if (loginForm) {
       const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           email,
           password,
