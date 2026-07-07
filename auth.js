@@ -17,10 +17,17 @@ const FORGOT_PASSWORD_PAGE = "forgot-password.html";
 const DEFAULT_AUTHED_PAGE = "heroSection.html";
 
 // IN-MEMORY TOKEN STORAGE (Protects against XSS)
+// sessionStorage bridge is used ONLY to survive a single page navigation.
+// It is consumed (deleted) immediately after being read.
 let inMemoryToken = null;
+const SESSION_BRIDGE_KEY = "_vtn_bridge";
 
 function saveToken(token) {
   inMemoryToken = token;
+  // Write to sessionStorage so the token survives the next page navigation
+  if (token) {
+    sessionStorage.setItem(SESSION_BRIDGE_KEY, token);
+  }
 }
 
 function getToken() {
@@ -29,6 +36,7 @@ function getToken() {
 
 function removeToken() {
   inMemoryToken = null;
+  sessionStorage.removeItem(SESSION_BRIDGE_KEY);
 }
 
 /**
@@ -76,7 +84,20 @@ async function checkAuth() {
   const isAuthPage = currentPage === LOGIN_PAGE || 
                      currentPage === FORGOT_PASSWORD_PAGE;
 
-  // If no token in memory, try to refresh
+  // 1. If no in-memory token, check the sessionStorage bridge first.
+  //    This handles the case where the user just logged in and navigated here.
+  //    The bridge token is consumed (deleted) immediately after reading.
+  if (!token) {
+    const bridgeToken = sessionStorage.getItem(SESSION_BRIDGE_KEY);
+    if (bridgeToken) {
+      console.log("Auth: restoring token from navigation bridge.");
+      inMemoryToken = bridgeToken;
+      sessionStorage.removeItem(SESSION_BRIDGE_KEY); // consume once
+      token = bridgeToken;
+    }
+  }
+
+  // 2. If still no token, try silent refresh via HttpOnly cookie
   if (!token) {
     const refreshed = await silentRefresh();
     if (refreshed) {
