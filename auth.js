@@ -74,7 +74,6 @@ async function checkAuth() {
   let token = getToken();
   const currentPage = window.location.pathname.split("/").pop() || "index.html";
   const isAuthPage = currentPage === LOGIN_PAGE || 
-                     currentPage === SIGNUP_PAGE || 
                      currentPage === FORGOT_PASSWORD_PAGE;
 
   // If no token in memory, try to refresh

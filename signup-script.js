@@ -1,9 +1,5 @@
-// We now use API_BASE_URL defined in auth.js instead of a local BACKEND_URL
-window.addEventListener("load", async () => {
-  if (typeof checkAuth === "function") {
-    await checkAuth();
-  }
-});
+// Signup is a public page — no auth check needed.
+// API_BASE_URL is defined in auth.js (loaded before this script).
 
 const PASSWORD_RULES = [
   {
